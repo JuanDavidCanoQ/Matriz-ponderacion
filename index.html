@@ -8,47 +8,38 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#EDF0F4;
-  --panel:#FFFFFF;
-  --panel-2:#F5F7FA;
-  --line:#E2E6EC;
-  --line-strong:#C6CCD6;
-  --text:#171A21;
-  --text-dim:#5B6270;
-  --text-faint:#6B7280;
-  --amber:#A5650C;
-  --amber-fill:#E8A33D;
-  --amber-dim:#F0D6AE;
-  --blue:#2557C7;
-  --blue-soft:#E4ECFB;
-  --teal:#1B7A50;
-  --red:#C6432E;
-  --nav-bg:rgba(255,255,255,0.86);
-  --shadow:0 1px 2px rgba(23,26,33,0.04), 0 8px 24px rgba(23,26,33,0.06);
-  --on-accent:#1A1206;
-  --mono:'JetBrains Mono',monospace;
-  --sans:'Manrope',sans-serif;
+  --ink:#F4F6FB; --panel:#FFFFFF; --panel-2:#EEF2F9;
+  --line:#E1E7F0; --line-strong:#C7D1E0;
+  --text:#1B2233; --text-dim:#5A6478; --text-faint:#7C859A;
+  --grad-a:#6E8CF5; --grad-b:#5FC1E8;
+  --grad:linear-gradient(135deg,var(--grad-a),var(--grad-b));
+  --amber:#DD6B20; --amber-fill:#F2994A; --amber-dim:#F0D6AE;
+  --blue:#6E8CF5; --blue-soft:#E4ECFB;
+  --teal:#0F9D6E;
+  --violet:#7C6CF0; --cyan:#2BB3D6; --gold:#D9A227;
+  --red:#D6432E;
+  --nav-bg:rgba(244,246,251,0.86);
+  --shadow:0 1px 2px rgba(27,34,51,.05),0 10px 28px rgba(70,110,220,.08);
+  --shadow-hover:0 4px 14px rgba(27,34,51,.08),0 18px 40px rgba(70,110,220,.14);
+  --on-accent:#FFFFFF;
+  --mono:'JetBrains Mono',monospace; --sans:'Manrope',sans-serif;
+  --r-lg:20px; --r-pill:999px;
 }
 body.theme-light{ /* kept for backwards compat with toggle logic, light is now default */ }
 body.theme-dark{
-  --ink:#0E141F;
-  --panel:#161E2C;
-  --panel-2:#1D2637;
-  --line:#2B3648;
-  --line-strong:#3C4A63;
-  --text:#E7E9EE;
-  --text-dim:#9AA2B2;
-  --text-faint:#6B7280;
-  --amber:#E8A33D;
-  --amber-fill:#E8A33D;
-  --amber-dim:#7A5A28;
-  --blue:#6E96F2;
-  --blue-soft:#1D2A44;
-  --teal:#3FB6A0;
-  --red:#E2694F;
-  --nav-bg:rgba(14,20,31,0.88);
-  --shadow:0 1px 2px rgba(0,0,0,0.2), 0 8px 24px rgba(0,0,0,0.3);
-  --on-accent:#0E141F;
+  --ink:#0B1120; --panel:#131C2E; --panel-2:#1A2438;
+  --line:#25324A; --line-strong:#374863;
+  --text:#E8EDF7; --text-dim:#A7B2C7; --text-faint:#7C8AA3;
+  --grad-a:#8FA8FF; --grad-b:#7FD4F2;
+  --amber:#F2994A; --amber-fill:#F2994A; --amber-dim:#7A5A28;
+  --blue:#8FA8FF; --blue-soft:#1D2A44;
+  --teal:#34D399;
+  --violet:#A78BFA; --cyan:#5FD5F0; --gold:#F0C05A;
+  --red:#F17161;
+  --nav-bg:rgba(11,17,32,0.88);
+  --shadow:0 1px 2px rgba(0,0,0,.25),0 10px 28px rgba(0,0,0,.35);
+  --shadow-hover:0 4px 16px rgba(0,0,0,.32),0 20px 44px rgba(120,170,240,.18);
+  --on-accent:#0B1120;
 }
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
@@ -60,6 +51,20 @@ body{
   -webkit-font-smoothing:antialiased;
   min-height:100vh;
   padding-top:56px;
+  position:relative;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(620px circle at 12% 8%, color-mix(in srgb,var(--grad-a) 13%,transparent),transparent 62%),
+    radial-gradient(560px circle at 88% 18%, color-mix(in srgb,var(--grad-b) 11%,transparent),transparent 62%),
+    radial-gradient(520px circle at 70% 82%, color-mix(in srgb,var(--teal) 7%,transparent),transparent 60%),
+    radial-gradient(480px circle at 20% 92%, color-mix(in srgb,var(--amber-fill) 6%,transparent),transparent 60%);
+}
+body::after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),
+    color-mix(in srgb,var(--grad-b) 6%,transparent),transparent 70%);
 }
 .wrap{max-width:1180px;margin:0 auto;padding:0 24px 80px;}
 
@@ -123,6 +128,11 @@ body{
 }
 .theme-toggle:hover{border-color:var(--amber);}
 
+.lang-toggle{display:flex;align-items:center;border:1px solid var(--line);border-radius:var(--r-pill);
+  background:var(--panel);padding:3px;gap:2px;flex-shrink:0;}
+.lang-toggle button{font-family:var(--mono);font-size:11px;font-weight:700;padding:6px 11px;
+  border-radius:var(--r-pill);border:none;background:none;color:var(--text-faint);cursor:pointer;}
+.lang-toggle button.active{background:var(--grad);color:#FFF;}
 .nav-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
 .nav-download{position:relative;}
 .download-btn{
@@ -246,7 +256,7 @@ h1{font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.1;margin:0 0 14p
   .modal-panel{max-height:85vh;}
 }
 .sub{color:var(--text-dim);font-size:15px;line-height:1.6;max-width:680px;}
-.balance-readout{margin-top:18px;margin-bottom:4px;padding:14px 18px;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;}
+.balance-readout{margin-top:18px;margin-bottom:4px;padding:14px 18px;background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;}
 .balance-readout .label{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);}
 .balance-readout .value{font-family:var(--mono);font-size:20px;font-weight:600;}
 .balance-readout .value.ok{color:var(--teal);}
@@ -262,9 +272,12 @@ h1{font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.1;margin:0 0 14p
   position:sticky;
   top:56px;
   z-index:20;
-  background:var(--ink);
-  padding:18px 0 16px;
-  border-bottom:2px solid var(--line-strong);
+  scroll-margin-top:80px;
+  background:color-mix(in srgb,var(--panel) 92%,transparent);
+  backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);
+  padding:14px 18px;
+  border-radius:16px;
+  box-shadow:var(--shadow);
 }
 .section-head .section-note,
 .section-head .anchor-note{
@@ -285,7 +298,7 @@ section{margin-bottom:68px;}
 .kpi-card{
   background:var(--panel);
   border:1px solid var(--line);
-  border-radius:14px;
+  border-radius:20px;
   box-shadow:var(--shadow);
   padding:18px 18px 16px;
   min-width:0;
@@ -331,12 +344,12 @@ section{margin-bottom:68px;}
 /* ---------- Ideas: add form + cards ---------- */
 .domain-select-row{
   display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  background:var(--panel);border:1px solid var(--line);border-radius:20px;
   box-shadow:var(--shadow);padding:18px 20px;
 }
 .project-name-row{
   margin-top:14px;
-  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  background:var(--panel);border:1px solid var(--line);border-radius:20px;
   box-shadow:var(--shadow);padding:16px 20px;
 }
 .project-name-row label{
@@ -362,7 +375,7 @@ section{margin-bottom:68px;}
   gap:14px;
   padding:20px;
   border:1px solid var(--line);
-  border-radius:14px;
+  border-radius:20px;
   background:var(--panel);
   box-shadow:var(--shadow);
   margin-bottom:20px;
@@ -383,7 +396,7 @@ section{margin-bottom:68px;}
   gap:14px;
   padding:16px 18px;
   border:1px solid var(--line);
-  border-radius:12px;
+  border-radius:16px;
   background:var(--panel);
   box-shadow:var(--shadow);
   align-items:start;
@@ -431,7 +444,7 @@ section{margin-bottom:68px;}
 .score-input:disabled{opacity:.35;cursor:not-allowed;}
 
 /* ---------- Weights panel ---------- */
-.weights{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);}
+.weights{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);}
 .weight-row{
   display:grid;
   grid-template-columns:1.2fr 1.4fr 160px 74px 32px 32px;
@@ -472,14 +485,14 @@ input[type=range]::-moz-range-thumb{width:17px;height:17px;border-radius:50%;bac
 .del-btn:hover{border-color:var(--red);color:var(--red);}
 
 .table-actions{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:12px;flex-wrap:wrap;}
-.btn{font-family:var(--mono);font-size:12.5px;letter-spacing:.03em;padding:10px 16px;border-radius:7px;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--text);transition:border-color .15s ease, color .15s ease;}
-.btn:hover{border-color:var(--amber);color:var(--amber);}
-.btn.primary{background:var(--blue);border-color:var(--blue);color:#FFFFFF;font-weight:700;}
-.btn.primary:hover{background:#1E4AAE;color:#FFFFFF;}
+.btn{font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.01em;padding:11px 18px;border-radius:var(--r-pill);cursor:pointer;border:1px solid var(--line);background:var(--panel-2);color:var(--text);display:inline-flex;align-items:center;gap:8px;justify-content:center;transition:border-color .15s ease,color .15s ease,transform .15s ease;}
+.btn:hover{border-color:var(--grad-a);color:var(--grad-a);transform:translateY(-1px);}
+.btn.primary{background:var(--grad);border-color:transparent;color:#FFFFFF;font-weight:700;box-shadow:0 6px 18px rgba(70,110,220,.25);}
+.btn.primary:hover{color:#FFFFFF;filter:brightness(1.07);}
 .anchor-note{font-size:11.5px;color:var(--text-faint);font-family:var(--mono);}
 
 /* ---------- Matrix table ---------- */
-.table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);}
+.table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);}
 table{border-collapse:collapse;width:100%;min-width:820px;}
 thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint);text-align:center;padding:14px 8px;border-bottom:1px solid var(--line);background:var(--panel-2);font-weight:500;}
 thead th.idea-col{text-align:left;padding-left:20px;}
@@ -515,7 +528,7 @@ tbody tr:hover{background:rgba(232,163,61,0.04);}
 
 /* ---------- Conclusions ---------- */
 .conclusions-card{
-  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  background:var(--panel);border:1px solid var(--line);border-radius:20px;
   box-shadow:var(--shadow);padding:26px 28px;
 }
 .conclusions-headline{
@@ -549,29 +562,33 @@ footer{border-top:1px solid var(--line);padding-top:24px;margin-top:60px;display
 }
 </style>
 </head>
-<body>
+<body class="theme-dark">
 <nav class="topnav">
   <div class="topnav-inner">
-    <span class="topnav-brand">Matriz de ponderación</span>
+    <span class="topnav-brand" data-i18n="brand">Matriz de ponderación</span>
     <div class="topnav-links" id="topnavLinks">
-      <a href="#domainSection" data-target="domainSection">Ámbito</a>
-      <a href="#ideasWriteSection" data-target="ideasWriteSection">01 Opciones</a>
-      <a href="#weightsSection" data-target="weightsSection">02 Criterios</a>
-      <a href="#matrixSection" data-target="matrixSection">03 Matriz</a>
-      <a href="#rankingSection" data-target="rankingSection">04 Ranking</a>
-      <a href="#conclusionsSection" data-target="conclusionsSection">05 Conclusiones</a>
+      <a href="#domainSection" data-target="domainSection" data-i18n="nav_domain">Ámbito</a>
+      <a href="#ideasWriteSection" data-target="ideasWriteSection" data-i18n="nav_options">01 Opciones</a>
+      <a href="#weightsSection" data-target="weightsSection" data-i18n="nav_criteria">02 Criterios</a>
+      <a href="#matrixSection" data-target="matrixSection" data-i18n="nav_matrix">03 Matriz</a>
+      <a href="#rankingSection" data-target="rankingSection" data-i18n="nav_ranking">04 Ranking</a>
+      <a href="#conclusionsSection" data-target="conclusionsSection" data-i18n="nav_conclusions">05 Conclusiones</a>
     </div>
     <div class="nav-right">
       <div class="nav-download" id="navDownload">
         <button class="download-btn" id="downloadMenuBtn" aria-haspopup="true" aria-expanded="false">
-          <span>⬇ Descargar</span><span class="caret">▾</span>
+          <span data-i18n="btn_download">Descargar</span><span class="caret">▾</span>
         </button>
         <div class="download-menu" id="downloadMenu">
-          <button class="download-menu-item" id="navDownloadPng">🖼 Imagen (PNG)</button>
-          <button class="download-menu-item" id="navDownloadXlsx">📊 Excel (.xlsx)</button>
+          <button class="download-menu-item" id="navDownloadPng" data-i18n="dl_png">Imagen (PNG)</button>
+          <button class="download-menu-item" id="navDownloadXlsx" data-i18n="dl_xlsx">Excel (.xlsx)</button>
         </div>
       </div>
-      <button class="theme-toggle" id="themeToggle" title="Cambiar a modo día" aria-label="Cambiar tema">🌙</button>
+      <div class="lang-toggle" id="langToggle">
+        <button data-lang="es" class="active">ES</button>
+        <button data-lang="en">EN</button>
+      </div>
+      <button class="theme-toggle" id="themeToggle" title="Cambiar a modo día" aria-label="Cambiar tema">☀</button>
     </div>
   </div>
 </nav>
@@ -590,10 +607,10 @@ footer{border-top:1px solid var(--line);padding-top:24px;margin-top:60px;display
   <section id="domainSection">
     <div class="section-head">
       <div>
-        <div class="section-num">Configuración inicial</div>
-        <h2 class="section-title">Elige el ámbito de la matriz</h2>
+        <div class="section-num" data-i18n="s0_num">Configuración inicial</div>
+        <h2 class="section-title" data-i18n="s0_title">Elige el ámbito de la matriz</h2>
       </div>
-      <p class="section-note">Cada ámbito trae criterios y opciones de ejemplo, editables. Al cambiar de ámbito se reemplaza todo lo que hay actualmente — se les pedirá confirmación.</p>
+      <p class="section-note" data-i18n="s0_note">Cada ámbito trae criterios y opciones de ejemplo, editables. Al cambiar de ámbito se reemplaza todo lo que hay actualmente — se les pedirá confirmación.</p>
     </div>
     <div class="domain-select-row">
       <select id="domainSelect" class="domain-select"></select>
@@ -643,10 +660,10 @@ footer{border-top:1px solid var(--line);padding-top:24px;margin-top:60px;display
   <section id="ideasWriteSection">
     <div class="section-head">
       <div>
-        <div class="section-num">01 — Opciones</div>
-        <h2 class="section-title">Agreguen las opciones a evaluar</h2>
+        <div class="section-num" data-i18n="s1_num">01 — Opciones</div>
+        <h2 class="section-title" data-i18n="s1_title">Agreguen las opciones a evaluar</h2>
       </div>
-      <p class="section-note">Nombre corto, descripción y notas adicionales. Cada opción que agreguen aparece automáticamente en la matriz de calificación más abajo.</p>
+      <p class="section-note" data-i18n="s1_note">Nombre corto, descripción y notas adicionales. Cada opción que agreguen aparece automáticamente en la matriz de calificación más abajo.</p>
     </div>
 
     <div class="idea-form">
@@ -663,7 +680,7 @@ footer{border-top:1px solid var(--line);padding-top:24px;margin-top:60px;display
         <textarea id="formExplanation" placeholder="Ej: información adicional relevante para calificarla"></textarea>
       </div>
       <div class="field field-btn">
-        <button class="btn primary" id="addIdeaBtn">+ Agregar opción</button>
+        <button class="btn primary" id="addIdeaBtn" data-i18n="btn_addopt">+ Agregar opción</button>
       </div>
     </div>
 
@@ -673,29 +690,29 @@ footer{border-top:1px solid var(--line);padding-top:24px;margin-top:60px;display
   <section id="weightsSection">
     <div class="section-head">
       <div>
-        <div class="section-num">02 — Criterios</div>
-        <h2 class="section-title">Criterios y pesos</h2>
+        <div class="section-num" data-i18n="s2_num">02 — Criterios</div>
+        <h2 class="section-title" data-i18n="s2_title">Criterios y pesos</h2>
       </div>
-      <p class="section-note">Editen el nombre, la justificación y el peso de cada criterio, o agreguen/eliminen criterios propios.</p>
+      <p class="section-note" data-i18n="s2_note">Editen el nombre, la justificación y el peso de cada criterio, o agreguen/eliminen criterios propios.</p>
     </div>
     <div class="weights" id="weightsList"></div>
     <div class="balance-readout" id="weightsSumBar">
-      <span class="label">Suma de pesos</span>
+      <span class="label" data-i18n="w_sum">Suma de pesos</span>
       <span class="value" id="weightSum">100%</span>
       <span class="label" id="weightWarning" style="color:var(--red);display:none;">— debe sumar 100% para que el puntaje sea comparable</span>
     </div>
     <div class="table-actions">
-      <button class="btn" id="addCriterionBtn">+ Agregar criterio</button>
+      <button class="btn" id="addCriterionBtn" data-i18n="btn_addcrit">+ Agregar criterio</button>
     </div>
   </section>
 
   <section id="matrixSection">
     <div class="section-head">
       <div>
-        <div class="section-num">03 — Calificación</div>
-        <h2 class="section-title">Matriz de calificación</h2>
+        <div class="section-num" data-i18n="s3_num">03 — Calificación</div>
+        <h2 class="section-title" data-i18n="s3_title">Matriz de calificación</h2>
       </div>
-      <p class="anchor-note">1 = muy débil · 2 = débil · 3 = neutral · 4 = fuerte · 5 = muy fuerte</p>
+      <p class="anchor-note" data-i18n="s3_note">1 = muy débil · 2 = débil · 3 = neutral · 4 = fuerte · 5 = muy fuerte</p>
     </div>
     <div class="scoring-lock-note" id="scoringLockNote">
       <span class="icon">⚠</span>
@@ -703,32 +720,32 @@ footer{border-top:1px solid var(--line);padding-top:24px;margin-top:60px;display
     </div>
     <div class="table-scroll" id="matrixTableWrap"></div>
     <div class="table-actions">
-      <button class="btn" id="resetBtn">Reiniciar calificaciones de la matriz</button>
+      <button class="btn" id="resetBtn" data-i18n="btn_reset">Reiniciar calificaciones de la matriz</button>
     </div>
   </section>
 
   <section id="rankingSection">
     <div class="section-head">
       <div>
-        <div class="section-num">04 — Resultado</div>
-        <h2 class="section-title">Ranking en vivo</h2>
+        <div class="section-num" data-i18n="s4_num">04 — Resultado</div>
+        <h2 class="section-title" data-i18n="s4_title">Ranking en vivo</h2>
       </div>
-      <p class="section-note">Ordenado de mayor a menor puntaje ponderado. Si el orden contradice fuertemente su criterio, revisen los pesos antes de decidir.</p>
+      <p class="section-note" data-i18n="s4_note">Ordenado de mayor a menor puntaje ponderado. Si el orden contradice fuertemente su criterio, revisen los pesos antes de decidir.</p>
     </div>
     <div class="leaderboard" id="leaderboard"></div>
     <div class="table-actions">
-      <button class="btn" id="downloadPngBtn">🖼 Descargar como imagen (PNG)</button>
-      <button class="btn" id="downloadXlsxBtn">📊 Descargar como Excel (.xlsx)</button>
+      <button class="btn" id="downloadPngBtn" data-i18n="btn_png">🖼 Descargar como imagen (PNG)</button>
+      <button class="btn" id="downloadXlsxBtn" data-i18n="btn_xlsx">📊 Descargar como Excel (.xlsx)</button>
     </div>
   </section>
 
   <section id="conclusionsSection">
     <div class="section-head">
       <div>
-        <div class="section-num">05 — Lectura</div>
-        <h2 class="section-title">Conclusiones</h2>
+        <div class="section-num" data-i18n="s5_num">05 — Lectura</div>
+        <h2 class="section-title" data-i18n="s5_title">Conclusiones</h2>
       </div>
-      <p class="section-note">Generadas automáticamente a partir del resultado actual. Se actualizan solas cada vez que cambian pesos o calificaciones.</p>
+      <p class="section-note" data-i18n="s5_note">Generadas automáticamente a partir del resultado actual. Se actualizan solas cada vez que cambian pesos o calificaciones.</p>
     </div>
     <div class="conclusions-card" id="conclusionsCard"></div>
   </section>
@@ -1789,6 +1806,86 @@ function closeDownloadMenu(){
 renderWeightsStructure();
 renderIdeaCardsStructure();
 renderMatrixStructure();
+
+/* ---------------- Cursor halo (mismo estilo que el portafolio) ---------------- */
+(function(){
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  let raf=null,lx=50,ly=50;
+  window.addEventListener("pointermove", e => {
+    lx=(e.clientX/window.innerWidth)*100; ly=(e.clientY/window.innerHeight)*100;
+    if(raf) return;
+    raf=requestAnimationFrame(()=>{
+      document.body.style.setProperty("--mx",lx+"%");
+      document.body.style.setProperty("--my",ly+"%");
+      raf=null;
+    });
+  },{passive:true});
+})();
+
+/* ---------------- i18n ES/EN ---------------- */
+const I18N = {
+  es:{
+    brand:"Matriz de ponderación",
+    nav_domain:"Ámbito", nav_options:"01 Opciones", nav_criteria:"02 Criterios",
+    nav_matrix:"03 Matriz", nav_ranking:"04 Ranking", nav_conclusions:"05 Conclusiones",
+    btn_download:"Descargar", dl_png:"Imagen (PNG)", dl_xlsx:"Excel (.xlsx)",
+    s0_num:"Configuración inicial", s0_title:"Elige el ámbito de la matriz",
+    s0_note:"Cada ámbito trae criterios y opciones de ejemplo, editables. Al cambiar de ámbito se reemplaza todo lo que hay actualmente — se les pedirá confirmación.",
+    s1_num:"01 — Opciones", s1_title:"Agreguen las opciones a evaluar",
+    s1_note:"Nombre corto, descripción y notas adicionales. Cada opción que agreguen aparece automáticamente en la matriz de calificación más abajo.",
+    s2_num:"02 — Criterios", s2_title:"Criterios y pesos",
+    s2_note:"Editen el nombre, la justificación y el peso de cada criterio, o agreguen/eliminen criterios propios.",
+    w_sum:"Suma de pesos",
+    s3_num:"03 — Calificación", s3_title:"Matriz de calificación",
+    s3_note:"1 = muy débil · 2 = débil · 3 = neutral · 4 = fuerte · 5 = muy fuerte",
+    s4_num:"04 — Resultado", s4_title:"Ranking en vivo",
+    s4_note:"Ordenado de mayor a menor puntaje ponderado. Si el orden contradice fuertemente su criterio, revisen los pesos antes de decidir.",
+    s5_num:"05 — Lectura", s5_title:"Conclusiones",
+    s5_note:"Generadas automáticamente a partir del resultado actual. Se actualizan solas cada vez que cambian pesos o calificaciones.",
+    btn_addcrit:"+ Agregar criterio", btn_addopt:"+ Agregar opción",
+    btn_reset:"Reiniciar calificaciones de la matriz",
+    btn_png:"Descargar como imagen (PNG)", btn_xlsx:"Descargar como Excel (.xlsx)"
+  },
+  en:{
+    brand:"Weighted decision matrix",
+    nav_domain:"Scope", nav_options:"01 Options", nav_criteria:"02 Criteria",
+    nav_matrix:"03 Matrix", nav_ranking:"04 Ranking", nav_conclusions:"05 Conclusions",
+    btn_download:"Download", dl_png:"Image (PNG)", dl_xlsx:"Excel (.xlsx)",
+    s0_num:"Initial setup", s0_title:"Choose the matrix scope",
+    s0_note:"Each scope comes with editable sample criteria and options. Switching scope replaces everything currently loaded — you'll be asked to confirm.",
+    s1_num:"01 — Options", s1_title:"Add the options to evaluate",
+    s1_note:"Short name, description and additional notes. Every option you add appears automatically in the scoring matrix below.",
+    s2_num:"02 — Criteria", s2_title:"Criteria and weights",
+    s2_note:"Edit the name, rationale and weight of each criterion, or add and remove your own criteria.",
+    w_sum:"Sum of weights",
+    s3_num:"03 — Scoring", s3_title:"Scoring matrix",
+    s3_note:"1 = very weak · 2 = weak · 3 = neutral · 4 = strong · 5 = very strong",
+    s4_num:"04 — Result", s4_title:"Live ranking",
+    s4_note:"Sorted from highest to lowest weighted score. If the order strongly contradicts your judgement, review the weights before deciding.",
+    s5_num:"05 — Reading", s5_title:"Conclusions",
+    s5_note:"Generated automatically from the current result. They update on their own whenever weights or scores change.",
+    btn_addcrit:"+ Add criterion", btn_addopt:"+ Add option",
+    btn_reset:"Reset matrix scores",
+    btn_png:"Download as image (PNG)", btn_xlsx:"Download as Excel (.xlsx)"
+  }
+};
+
+function applyLanguage(lang){
+  document.documentElement.lang = lang;
+  const dict = I18N[lang];
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const k = el.getAttribute("data-i18n");
+    if(dict[k] !== undefined) el.textContent = dict[k];
+  });
+  document.querySelectorAll("#langToggle button").forEach(b => {
+    b.classList.toggle("active", b.dataset.lang === lang);
+  });
+}
+document.getElementById("langToggle").addEventListener("click", e => {
+  const b = e.target.closest("button[data-lang]");
+  if(b) applyLanguage(b.dataset.lang);
+});
+applyLanguage("es");
 </script>
 </body>
 </html>
