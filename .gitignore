@@ -1,0 +1,13 @@
+# Lista blanca: se ignora todo salvo lo listado abajo.
+# Para publicar un archivo nuevo hay que agregarlo aquí a propósito (frente R5).
+/*
+
+# Repositorio
+!/.gitignore
+!/README.md
+!/LICENSE
+
+# Herramienta
+!/index.html
+# Verificación de Google Search Console
+!/googlef6034298c54623d4.html
