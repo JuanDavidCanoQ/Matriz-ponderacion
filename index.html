@@ -811,7 +811,17 @@ const store = {
   get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
   set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
 };
-let LANG = store.get("jdc-lang") === "en" ? "en" : "es";
+/* Idioma inicial: ?lang=es|en (se guarda) → idioma guardado → idioma del navegador → español */
+let LANG = (() => {
+  let q = null;
+  try{ q = new URLSearchParams(location.search).get("lang"); }catch(e){}
+  if(q === "es" || q === "en"){ store.set("jdc-lang", q); return q; }
+  const s = store.get("jdc-lang");
+  if(s === "es" || s === "en") return s;
+  let nav = "";
+  try{ nav = navigator.language || ""; }catch(e){}
+  return /^en\b/i.test(nav) ? "en" : "es";
+})();
 
 /* ---------------- i18n ES/EN ---------------- */
 const I18N = {
