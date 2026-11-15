@@ -3,7 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Matriz de Ponderación — Herramienta multipropósito</title>
+<title>Matriz de Ponderación — Decision Intelligence</title>
+<meta name="description" content="Herramienta de análisis de decisión multicriterio: definan criterios y pesos, califiquen opciones y revisen qué tan sólido es el resultado antes de decidir. Bilingüe ES/EN.">
+<meta name="author" content="Juan David Cano">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0B1120">
+<link rel="canonical" href="https://matriz-ponderacion.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://matriz-ponderacion.vercel.app/">
+<meta property="og:title" content="Matriz de Ponderación — Decision Intelligence">
+<meta property="og:description" content="Análisis de decisión con prueba de robustez: criterios, pesos, calificación de opciones y lectura automática del resultado.">
+<meta property="og:locale" content="es_CO">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Matriz de Ponderación — Decision Intelligence">
+<meta name="twitter:description" content="Análisis de decisión con prueba de robustez: criterios, pesos, calificación de opciones y lectura automática del resultado.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -13,33 +27,28 @@
   --text:#1B2233; --text-dim:#5A6478; --text-faint:#7C859A;
   --grad-a:#6E8CF5; --grad-b:#5FC1E8;
   --grad:linear-gradient(135deg,var(--grad-a),var(--grad-b));
-  --amber:#DD6B20; --amber-fill:#F2994A; --amber-dim:#F0D6AE;
-  --blue:#6E8CF5; --blue-soft:#E4ECFB;
-  --teal:#0F9D6E;
-  --violet:#7C6CF0; --cyan:#2BB3D6; --gold:#D9A227;
+  --orange:#DD6B20; --orange-fill:#F2994A;
+  --mint:#0F9D6E; --mint-soft:#E1F5EC;
+  --violet:#7C6CF0; --rose:#E2649B; --cyan:#2BB3D6; --gold:#D9A227;
   --red:#D6432E;
   --nav-bg:rgba(244,246,251,0.86);
   --shadow:0 1px 2px rgba(27,34,51,.05),0 10px 28px rgba(70,110,220,.08);
   --shadow-hover:0 4px 14px rgba(27,34,51,.08),0 18px 40px rgba(70,110,220,.14);
-  --on-accent:#FFFFFF;
   --mono:'JetBrains Mono',monospace; --sans:'Manrope',sans-serif;
   --r-lg:20px; --r-pill:999px;
 }
-body.theme-light{ /* kept for backwards compat with toggle logic, light is now default */ }
 body.theme-dark{
   --ink:#0B1120; --panel:#131C2E; --panel-2:#1A2438;
   --line:#25324A; --line-strong:#374863;
   --text:#E8EDF7; --text-dim:#A7B2C7; --text-faint:#7C8AA3;
   --grad-a:#8FA8FF; --grad-b:#7FD4F2;
-  --amber:#F2994A; --amber-fill:#F2994A; --amber-dim:#7A5A28;
-  --blue:#8FA8FF; --blue-soft:#1D2A44;
-  --teal:#34D399;
-  --violet:#A78BFA; --cyan:#5FD5F0; --gold:#F0C05A;
+  --orange:#F2994A; --orange-fill:#F2994A;
+  --mint:#34D399; --mint-soft:#173327;
+  --violet:#A78BFA; --rose:#F48FB6; --cyan:#5FD5F0; --gold:#F0C05A;
   --red:#F17161;
   --nav-bg:rgba(11,17,32,0.88);
   --shadow:0 1px 2px rgba(0,0,0,.25),0 10px 28px rgba(0,0,0,.35);
   --shadow-hover:0 4px 16px rgba(0,0,0,.32),0 20px 44px rgba(120,170,240,.18);
-  --on-accent:#0B1120;
 }
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
@@ -58,8 +67,8 @@ body::before{
   background:
     radial-gradient(620px circle at 12% 8%, color-mix(in srgb,var(--grad-a) 13%,transparent),transparent 62%),
     radial-gradient(560px circle at 88% 18%, color-mix(in srgb,var(--grad-b) 11%,transparent),transparent 62%),
-    radial-gradient(520px circle at 70% 82%, color-mix(in srgb,var(--teal) 7%,transparent),transparent 60%),
-    radial-gradient(480px circle at 20% 92%, color-mix(in srgb,var(--amber-fill) 6%,transparent),transparent 60%);
+    radial-gradient(520px circle at 70% 82%, color-mix(in srgb,var(--mint) 7%,transparent),transparent 60%),
+    radial-gradient(480px circle at 20% 92%, color-mix(in srgb,var(--orange-fill) 6%,transparent),transparent 60%);
 }
 body::after{
   content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
@@ -91,13 +100,17 @@ body::after{
   justify-content:space-between;
   gap:20px;
 }
-.topnav-brand{
-  font-family:var(--mono);
-  font-size:12px;
-  letter-spacing:.08em;
-  color:var(--text-dim);
-  white-space:nowrap;
-}
+.brand-block{display:flex;align-items:center;gap:11px;text-decoration:none;flex-shrink:0;}
+.brand-mark{width:32px;height:32px;position:relative;flex:none;display:flex;align-items:center;justify-content:center;}
+.brand-mark .ring{position:absolute;inset:0;border-radius:50%;border:1px solid var(--line);}
+.brand-mark .core{width:11px;height:11px;border-radius:50%;
+  background:linear-gradient(135deg,var(--grad-a),var(--grad-b));
+  box-shadow:0 0 14px color-mix(in srgb,var(--grad-b) 60%,transparent);}
+.brand-mark .orbit{position:absolute;inset:0;animation:brandOrbit 5.5s linear infinite;}
+.brand-mark .orbit i{position:absolute;top:-2px;left:50%;margin-left:-2.5px;width:5px;height:5px;border-radius:50%;
+  background:var(--grad-b);box-shadow:0 0 8px var(--grad-b);}
+@keyframes brandOrbit{to{transform:rotate(360deg);}}
+.topnav-brand{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--text-dim);white-space:nowrap;}
 .topnav-links{display:flex;gap:4px;}
 .topnav-links a{
   font-family:var(--mono);
@@ -111,7 +124,7 @@ body::after{
   white-space:nowrap;
 }
 .topnav-links a:hover{color:var(--text);background:var(--panel);}
-.topnav-links a.active{color:var(--blue);background:var(--blue-soft);font-weight:700;}
+.topnav-links a.active{color:var(--grad-a);background:color-mix(in srgb,var(--grad-a) 16%,transparent);font-weight:700;}
 .theme-toggle{
   display:flex;
   align-items:center;
@@ -126,7 +139,7 @@ body::after{
   flex-shrink:0;
   transition:border-color .15s ease;
 }
-.theme-toggle:hover{border-color:var(--amber);}
+.theme-toggle:hover{border-color:var(--orange);}
 
 .lang-toggle{display:flex;align-items:center;border:1px solid var(--line);border-radius:var(--r-pill);
   background:var(--panel);padding:3px;gap:2px;flex-shrink:0;}
@@ -143,7 +156,7 @@ body::after{
   cursor:pointer;white-space:nowrap;
   transition:border-color .15s ease, color .15s ease;
 }
-.download-btn:hover{border-color:var(--blue);color:var(--blue);}
+.download-btn:hover{border-color:var(--grad-a);color:var(--grad-a);}
 .download-btn .caret{font-size:10px;}
 .download-menu{
   position:absolute;top:calc(100% + 8px);right:0;
@@ -159,7 +172,7 @@ body::after{
   padding:9px 10px;border-radius:7px;border:none;background:none;
   color:var(--text);font-family:var(--sans);font-size:13px;cursor:pointer;
 }
-.download-menu-item:hover{background:var(--panel-2);color:var(--blue);}
+.download-menu-item:hover{background:var(--panel-2);color:var(--grad-a);}
 
 .export-toast{
   position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
@@ -172,19 +185,20 @@ body::after{
 }
 .export-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .export-toast.error{border-color:var(--red);color:var(--red);}
-.export-toast.success{border-color:var(--teal);color:var(--teal);}
+.export-toast.success{border-color:var(--mint);color:var(--mint);}
 
 @media (max-width:720px){
   .topnav-brand{display:none;}
+  .brand-block{gap:0;}
   .topnav-links{gap:2px;overflow-x:auto;}
   .topnav-links a{padding:7px 9px;font-size:11px;}
   .download-btn span:not(.caret){display:none;}
 }
 
 header{padding:52px 0 34px;border-bottom:1px solid var(--line);margin-bottom:36px;}
-.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
-.eyebrow::before{content:"";width:18px;height:1px;background:var(--amber);display:inline-block;}
-h1{font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.1;margin:0 0 14px;letter-spacing:-.01em;}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--orange);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.eyebrow::before{content:"";width:18px;height:1px;background:var(--orange);display:inline-block;}
+h1{font-weight:800;font-size:clamp(28px,4vw,42px);line-height:1.1;margin:0 0 14px;letter-spacing:-.01em;}
 .h1-row{display:flex;align-items:flex-start;gap:14px;}
 .help-icon-btn{
   flex-shrink:0;margin-top:6px;
@@ -194,7 +208,7 @@ h1{font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.1;margin:0 0 14p
   display:flex;align-items:center;justify-content:center;
   transition:transform .15s ease, border-color .15s ease;
 }
-.help-icon-btn:hover{border-color:var(--amber);transform:scale(1.06);}
+.help-icon-btn:hover{border-color:var(--orange);transform:scale(1.06);}
 
 /* ---------- Help modal ---------- */
 .modal-overlay{
@@ -232,7 +246,7 @@ h1{font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.1;margin:0 0 14p
 .modal-close:hover{border-color:var(--red);color:var(--red);}
 .modal-eyebrow{
   font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--amber);margin-bottom:10px;
+  color:var(--orange);margin-bottom:10px;
 }
 .modal-title{font-size:26px;font-weight:800;margin:0;letter-spacing:-.01em;}
 .modal-section{margin-bottom:26px;}
@@ -244,7 +258,7 @@ h1{font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.1;margin:0 0 14p
 .modal-section li{font-size:13.5px;line-height:1.6;color:var(--text-dim);}
 .modal-section strong{color:var(--text);font-weight:700;}
 .modal-formula{
-  font-family:var(--mono);font-size:13px;font-weight:600;color:var(--amber);
+  font-family:var(--mono);font-size:13px;font-weight:600;color:var(--orange);
   background:var(--panel-2);border:1px solid var(--line);border-radius:10px;
   padding:14px 16px;margin-bottom:8px;overflow-x:auto;white-space:nowrap;
 }
@@ -259,7 +273,7 @@ h1{font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.1;margin:0 0 14p
 .balance-readout{margin-top:18px;margin-bottom:4px;padding:14px 18px;background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;}
 .balance-readout .label{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);}
 .balance-readout .value{font-family:var(--mono);font-size:20px;font-weight:600;}
-.balance-readout .value.ok{color:var(--teal);}
+.balance-readout .value.ok{color:var(--mint);}
 .balance-readout .value.warn{color:var(--red);}
 
 .section-head{
@@ -284,7 +298,7 @@ h1{font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.1;margin:0 0 14p
   padding-top:3px;
 }
 .section-num{font-family:var(--mono);font-size:12px;color:var(--text-faint);letter-spacing:.08em;position:relative;padding-left:13px;}
-.section-num::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:3px;border-radius:2px;background:var(--amber-fill);}
+.section-num::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:3px;border-radius:2px;background:var(--orange-fill);}
 .section-title{font-size:20px;font-weight:600;margin:4px 0 0;}
 .section-note{color:var(--text-dim);font-size:13px;max-width:420px;line-height:1.55;}
 section{margin-bottom:68px;}
@@ -317,10 +331,10 @@ section{margin-bottom:68px;}
   -webkit-box-orient:vertical;
   overflow:hidden;
 }
-.kpi-value.accent-teal{color:var(--teal);}
-.kpi-value.accent-amber{color:var(--amber);}
+.kpi-value.accent-mint{color:var(--mint);}
+.kpi-value.accent-orange{color:var(--orange);}
 .kpi-value.accent-red{color:var(--red);}
-.kpi-value.accent-blue{color:var(--blue);}
+.kpi-value.accent-brand{color:var(--grad-a);}
 .kpi-label{
   font-family:var(--mono);
   font-size:11px;
@@ -361,13 +375,13 @@ section{margin-bottom:68px;}
   width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;
   color:var(--text);font-family:var(--sans);font-size:14px;font-weight:600;padding:10px 12px;
 }
-.project-name-row input:focus{outline:none;border-color:var(--blue);}
+.project-name-row input:focus{outline:none;border-color:var(--grad-a);}
 .domain-select{
   background:var(--panel);border:1px solid var(--line);border-radius:8px;
   color:var(--text);font-family:var(--sans);font-size:14px;font-weight:600;
   padding:11px 14px;cursor:pointer;min-width:280px;
 }
-.domain-select:focus{outline:none;border-color:var(--amber);}
+.domain-select:focus{outline:none;border-color:var(--orange);}
 .domain-hint{font-size:12.5px;color:var(--text-faint);font-family:var(--mono);}
 .idea-form{
   display:grid;
@@ -386,7 +400,7 @@ section{margin-bottom:68px;}
   color:var(--text);font-family:var(--sans);font-size:13.5px;padding:9px 10px;resize:vertical;
 }
 .idea-form textarea{min-height:44px;line-height:1.4;}
-.idea-form input:focus, .idea-form textarea:focus{outline:none;border-color:var(--amber);}
+.idea-form input:focus, .idea-form textarea:focus{outline:none;border-color:var(--orange);}
 .idea-form .field-btn{display:flex;align-items:flex-end;}
 
 .idea-cards{display:flex;flex-direction:column;gap:10px;}
@@ -407,7 +421,7 @@ section{margin-bottom:68px;}
   color:var(--text);font-family:var(--sans);font-size:13.5px;padding:4px 2px;resize:vertical;
 }
 .idea-card textarea{min-height:38px;line-height:1.4;}
-.idea-card input:focus, .idea-card textarea:focus{outline:none;border-bottom:1px solid var(--amber);}
+.idea-card input:focus, .idea-card textarea:focus{outline:none;border-bottom:1px solid var(--orange);}
 .idea-card .name-field input{font-weight:600;font-size:14.5px;}
 .empty-state{
   border:1px dashed var(--line);border-radius:10px;padding:24px;text-align:center;
@@ -435,7 +449,7 @@ section{margin-bottom:68px;}
   margin-bottom:14px;
   border:1px solid var(--red);
   border-radius:8px;
-  background:rgba(217,99,74,0.08);
+  background:color-mix(in srgb,var(--red) 8%,transparent);
   color:var(--red);
   font-size:13px;
   line-height:1.5;
@@ -454,7 +468,7 @@ section{margin-bottom:68px;}
   border-bottom:1px solid var(--line);
   background:var(--panel);
 }
-.weight-row.locked-row{background:var(--blue-soft);}
+.weight-row.locked-row{background:color-mix(in srgb,var(--grad-a) 16%,transparent);}
 .weight-row:last-child{border-bottom:none;}
 .weight-row:nth-child(even):not(.locked-row){background:var(--panel-2);}
 .weight-row input[type=text]{
@@ -462,25 +476,25 @@ section{margin-bottom:68px;}
   color:var(--text);font-family:var(--sans);font-weight:600;font-size:14px;width:100%;padding:4px 2px;
 }
 .weight-row input[type=text].just-input{font-weight:400;font-size:12.5px;color:var(--text-dim);}
-.weight-row input[type=text]:focus{outline:none;border-bottom:1px solid var(--amber);}
+.weight-row input[type=text]:focus{outline:none;border-bottom:1px solid var(--orange);}
 .w-slider-cell{display:flex;flex-direction:column;gap:6px;}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;outline:none;cursor:pointer;background:var(--line);}
 input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:transparent;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--amber-fill);cursor:pointer;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--amber-fill);margin-top:-5.5px;position:relative;z-index:2;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--orange-fill);cursor:pointer;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--orange-fill);margin-top:-5.5px;position:relative;z-index:2;}
 input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:transparent;}
-input[type=range]::-moz-range-thumb{width:17px;height:17px;border-radius:50%;background:var(--amber-fill);cursor:pointer;border:2px solid var(--panel);}
+input[type=range]::-moz-range-thumb{width:17px;height:17px;border-radius:50%;background:var(--orange-fill);cursor:pointer;border:2px solid var(--panel);}
 .w-pct-input-wrap{display:flex;align-items:center;justify-content:flex-end;gap:3px;}
 .w-pct-input{
   width:54px;text-align:right;background:var(--panel);border:1px solid var(--line);border-radius:6px;
-  color:var(--amber);font-family:var(--mono);font-size:15px;font-weight:700;padding:6px 5px;
+  color:var(--orange);font-family:var(--mono);font-size:15px;font-weight:700;padding:6px 5px;
   -moz-appearance:textfield;
 }
 .w-pct-input::-webkit-outer-spin-button, .w-pct-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
-.w-pct-input:focus{outline:none;border-color:var(--amber);}
+.w-pct-input:focus{outline:none;border-color:var(--orange);}
 .w-pct-suffix{font-size:11px;color:var(--text-faint);font-weight:400;}
 .lock-btn{background:none;border:1px solid var(--line);color:var(--text-faint);width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.lock-btn:hover{border-color:var(--blue);color:var(--blue);}
-.lock-btn.locked{background:var(--blue);border-color:var(--blue);}
+.lock-btn:hover{border-color:var(--grad-a);color:var(--grad-a);}
+.lock-btn.locked{background:var(--grad-a);border-color:var(--grad-a);}
 .del-btn{background:none;border:1px solid var(--line);color:var(--text-faint);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:14px;line-height:1;flex-shrink:0;}
 .del-btn:hover{border-color:var(--red);color:var(--red);}
 
@@ -496,10 +510,10 @@ input[type=range]::-moz-range-thumb{width:17px;height:17px;border-radius:50%;bac
 table{border-collapse:collapse;width:100%;min-width:820px;}
 thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint);text-align:center;padding:14px 8px;border-bottom:1px solid var(--line);background:var(--panel-2);font-weight:500;}
 thead th.idea-col{text-align:left;padding-left:20px;}
-thead th .crit-weight{display:block;color:var(--amber);margin-top:3px;font-size:10px;}
+thead th .crit-weight{display:block;color:var(--orange);margin-top:3px;font-size:10px;}
 tbody td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle;}
 tbody tr:last-child td{border-bottom:none;}
-tbody tr:hover{background:rgba(232,163,61,0.04);}
+tbody tr:hover{background:color-mix(in srgb,var(--orange-fill) 5%,transparent);}
 .idea-name-cell{text-align:left;padding-left:20px !important;min-width:210px;}
 .idea-name-cell .info-icon{
   display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;
@@ -508,22 +522,22 @@ tbody tr:hover{background:rgba(232,163,61,0.04);}
 }
 .idea-name-cell .name-wrap{display:flex;align-items:center;font-weight:500;font-size:14px;}
 .score-input{width:44px;text-align:center;background:var(--panel);border:1px solid var(--line);color:var(--text);font-family:var(--mono);font-size:14px;border-radius:6px;padding:6px 4px;}
-.score-input:focus{outline:none;border-color:var(--amber);}
-.total-cell{font-family:var(--mono);font-weight:700;font-size:15px;color:var(--teal);min-width:60px;}
+.score-input:focus{outline:none;border-color:var(--orange);}
+.total-cell{font-family:var(--mono);font-weight:700;font-size:15px;color:var(--mint);min-width:60px;}
 .rank-cell{font-family:var(--mono);font-weight:600;font-size:13px;color:var(--text-dim);}
-.rank-cell.first{color:var(--teal);}
+.rank-cell.first{color:var(--mint);}
 
 /* ---------- Leaderboard ---------- */
 .leaderboard{display:flex;flex-direction:column;gap:14px;}
 .lb-row{display:grid;grid-template-columns:26px 1fr 60px;align-items:center;gap:14px;}
 .lb-rank{font-family:var(--mono);font-size:13px;color:var(--text-faint);text-align:right;}
-.lb-rank.first{color:var(--teal);font-weight:700;}
+.lb-rank.first{color:var(--mint);font-weight:700;}
 .lb-main{display:flex;flex-direction:column;gap:6px;min-width:0;}
 .lb-name{font-size:13.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.lb-name.first{color:var(--teal);}
+.lb-name.first{color:var(--mint);}
 .lb-track{position:relative;height:12px;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;overflow:hidden;}
-.lb-fill{position:absolute;top:0;left:0;bottom:0;background:var(--amber-fill);border-radius:6px;transition:width .35s cubic-bezier(.4,0,.2,1);}
-.lb-fill.first{background:var(--teal);}
+.lb-fill{position:absolute;top:0;left:0;bottom:0;background:var(--orange-fill);border-radius:6px;transition:width .35s cubic-bezier(.4,0,.2,1);}
+.lb-fill.first{background:var(--mint);}
 .lb-score{font-family:var(--mono);font-size:15px;font-weight:700;text-align:right;color:var(--text);}
 
 /* ---------- Conclusions ---------- */
@@ -535,7 +549,7 @@ tbody tr:hover{background:rgba(232,163,61,0.04);}
   display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
   font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px;
 }
-.conclusions-headline .cname{color:var(--teal);}
+.conclusions-headline .cname{color:var(--mint);}
 .conclusions-headline .cscore{font-family:var(--mono);font-size:14px;color:var(--text-dim);font-weight:600;}
 .conclusions-list{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:12px;}
 .conclusions-list li{
@@ -548,8 +562,8 @@ tbody tr:hover{background:rgba(232,163,61,0.04);}
   font-size:11px;margin-top:1px;
   background:var(--panel-2);color:var(--text-dim);
 }
-.conclusions-list li .bullet-icon.warn{background:rgba(198,67,46,0.12);color:var(--red);}
-.conclusions-list li .bullet-icon.good{background:rgba(27,122,80,0.12);color:var(--teal);}
+.conclusions-list li .bullet-icon.warn{background:color-mix(in srgb,var(--red) 14%,transparent);color:var(--red);}
+.conclusions-list li .bullet-icon.good{background:color-mix(in srgb,var(--mint) 14%,transparent);color:var(--mint);}
 .conclusions-list li strong{color:var(--text);font-weight:600;}
 
 footer{border-top:1px solid var(--line);padding-top:24px;margin-top:60px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--text-faint);font-family:var(--mono);}
@@ -560,12 +574,32 @@ footer{border-top:1px solid var(--line);padding-top:24px;margin-top:60px;display
   .w-pct-input-wrap{justify-content:flex-start;}
   header{padding:36px 0 26px;}
 }
+
+/* ---------- Fondo de partículas, barra de progreso, pie ---------- */
+#particles-bg{position:fixed;inset:0;width:100%;height:100%;z-index:-2;pointer-events:none;opacity:.6;}
+.scroll-progress{position:fixed;top:0;left:0;height:3px;width:0%;background:var(--grad);z-index:200;transition:width .08s linear;}
+h1 .h1-sub{display:block;font-size:clamp(17px,2.1vw,22px);font-weight:600;color:var(--text-dim);margin-top:10px;letter-spacing:0;}
+.footer-note{max-width:640px;line-height:1.6;}
+.back-link{color:var(--grad-a);text-decoration:none;font-weight:600;white-space:nowrap;}
+.back-link:hover{text-decoration:underline;}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  *,*::before,*::after{animation:none !important;transition:none !important;}
+}
+
 </style>
 </head>
 <body class="theme-dark">
+<canvas id="particles-bg" aria-hidden="true"></canvas>
+<div class="scroll-progress" id="scrollProgress"></div>
 <nav class="topnav">
   <div class="topnav-inner">
-    <span class="topnav-brand" data-i18n="brand">Matriz de ponderación</span>
+    <a href="#top" class="brand-block" aria-label="Matriz de Ponderación" data-i18n-aria="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <span class="ring"></span><span class="core"></span><span class="orbit"><i></i></span>
+      </span>
+      <span class="topnav-brand" data-i18n="brand">Matriz de Ponderación</span>
+    </a>
     <div class="topnav-links" id="topnavLinks">
       <a href="#domainSection" data-target="domainSection" data-i18n="nav_domain">Ámbito</a>
       <a href="#ideasWriteSection" data-target="ideasWriteSection" data-i18n="nav_options">01 Opciones</a>
@@ -588,37 +622,37 @@ footer{border-top:1px solid var(--line);padding-top:24px;margin-top:60px;display
         <button data-lang="es" class="active">ES</button>
         <button data-lang="en">EN</button>
       </div>
-      <button class="theme-toggle" id="themeToggle" title="Cambiar a modo día" aria-label="Cambiar tema">☀</button>
+      <button class="theme-toggle" id="themeToggle" title="Cambiar a modo día" aria-label="Cambiar tema" data-i18n-aria="theme_aria">☀</button>
     </div>
   </div>
 </nav>
-<div class="export-toast" id="exportToast"></div>
-<div class="wrap">
+<div class="export-toast" id="exportToast" role="status" aria-live="polite"></div>
+<div class="wrap" id="top">
 
   <header>
-    <div class="eyebrow">Herramienta de decisión multipropósito</div>
+    <div class="eyebrow" data-i18n="eyebrow">Decision Intelligence · Herramienta de decisión</div>
     <div class="h1-row">
-      <h1>Matriz de ponderación<br>para cualquier decisión</h1>
-      <button class="help-icon-btn" id="helpBtn" title="¿Qué es la matriz de ponderación?" aria-label="Explicación del método">💡</button>
+      <h1><span data-i18n="h1_main">Matriz de Ponderación</span><span class="h1-sub" data-i18n="h1_sub">Análisis de decisión con prueba de robustez</span></h1>
+      <button class="help-icon-btn" id="helpBtn" title="¿Qué es la matriz de ponderación?" aria-label="Explicación del método" data-i18n-title="help_btn_title" data-i18n-aria="help_btn_aria">💡</button>
     </div>
-    <p class="sub">Elijan un ámbito, escriban las opciones a evaluar, ajusten criterios y pesos, y califiquen cada opción de 1 a 5. Todo se recalcula en tiempo real.</p>
+    <p class="sub" data-i18n="sub">Estructuren una decisión entre varias opciones: definan criterios y pesos, califiquen cada opción de 1 a 5 y revisen qué tan sólido es el resultado antes de decidir. Todo se recalcula en tiempo real.</p>
   </header>
 
   <section id="domainSection">
     <div class="section-head">
       <div>
         <div class="section-num" data-i18n="s0_num">Configuración inicial</div>
-        <h2 class="section-title" data-i18n="s0_title">Elige el ámbito de la matriz</h2>
+        <h2 class="section-title" data-i18n="s0_title">Elijan el ámbito de la matriz</h2>
       </div>
-      <p class="section-note" data-i18n="s0_note">Cada ámbito trae criterios y opciones de ejemplo, editables. Al cambiar de ámbito se reemplaza todo lo que hay actualmente — se les pedirá confirmación.</p>
+      <p class="section-note" data-i18n="s0_note">Cada ámbito trae criterios y opciones de ejemplo, editables. Al cambiar de ámbito se reemplaza todo lo que hay actualmente; se les pedirá confirmación.</p>
     </div>
     <div class="domain-select-row">
-      <select id="domainSelect" class="domain-select"></select>
+      <select id="domainSelect" class="domain-select" aria-label="Ámbito" data-i18n-aria="nav_domain"></select>
       <span class="domain-hint" id="domainHint"></span>
     </div>
     <div class="project-name-row">
-      <label for="projectNameInput">Nombre del proyecto <span class="optional-tag">(opcional)</span></label>
-      <input type="text" id="projectNameInput" placeholder="Ej: Compra de apartamento en Cali, Contratación analista Q3…">
+      <label for="projectNameInput"><span data-i18n="project_label">Nombre del proyecto</span> <span class="optional-tag" data-i18n="optional">(opcional)</span></label>
+      <input type="text" id="projectNameInput" placeholder="Ej: Compra de apartamento, contratación de un analista…" data-i18n-ph="project_ph">
     </div>
   </section>
 
@@ -631,27 +665,27 @@ footer{border-top:1px solid var(--line);padding-top:24px;margin-top:60px;display
       </div>
       <div class="kpi-card">
         <div class="kpi-value" id="kpiOptionsValue">0</div>
-        <div class="kpi-label">Opciones cargadas</div>
-        <div class="kpi-sub" id="kpiOptionsSub">Agréguenlas en la sección 01</div>
+        <div class="kpi-label" data-i18n="kpi_options">Opciones cargadas</div>
+        <div class="kpi-sub" id="kpiOptionsSub"></div>
       </div>
       <div class="kpi-card">
         <div class="kpi-value" id="kpiWeightsValue">0%</div>
-        <div class="kpi-label">Suma de pesos</div>
-        <div class="kpi-sub" id="kpiWeightsSub">0 criterios activos</div>
+        <div class="kpi-label" data-i18n="kpi_weights">Suma de pesos</div>
+        <div class="kpi-sub" id="kpiWeightsSub"></div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-value accent-teal" id="kpiLeaderValue">—</div>
-        <div class="kpi-label">Líder actual</div>
-        <div class="kpi-sub" id="kpiLeaderSub">Sin calificar aún</div>
+        <div class="kpi-value accent-mint" id="kpiLeaderValue">—</div>
+        <div class="kpi-label" data-i18n="kpi_leader">Líder actual</div>
+        <div class="kpi-sub" id="kpiLeaderSub"></div>
       </div>
       <div class="kpi-card">
         <div class="kpi-value" id="kpiGapValue">—</div>
-        <div class="kpi-label">Margen sobre el 2° lugar</div>
-        <div class="kpi-sub" id="kpiGapSub">Qué tan clara es la decisión</div>
+        <div class="kpi-label" data-i18n="kpi_gap">Margen sobre el 2.º lugar</div>
+        <div class="kpi-sub" id="kpiGapSub"></div>
       </div>
       <div class="kpi-card">
         <div class="kpi-value" id="kpiStatusValue">—</div>
-        <div class="kpi-label">Estado de calificación</div>
+        <div class="kpi-label" data-i18n="kpi_status">Estado de calificación</div>
         <div class="kpi-sub" id="kpiStatusSub">—</div>
       </div>
     </div>
@@ -668,16 +702,16 @@ footer{border-top:1px solid var(--line);padding-top:24px;margin-top:60px;display
 
     <div class="idea-form">
       <div class="field">
-        <label>Nombre corto</label>
-        <input type="text" id="formName" placeholder="Ej: nombre de la opción a evaluar">
+        <label for="formName" data-i18n="f_name">Nombre corto</label>
+        <input type="text" id="formName" placeholder="Ej: nombre de la opción a evaluar" data-i18n-ph="f_name_ph">
       </div>
       <div class="field">
-        <label>Descripción</label>
-        <textarea id="formProblem" placeholder="Ej: qué es o qué problema resuelve esta opción"></textarea>
+        <label for="formProblem" data-i18n="f_desc">Descripción</label>
+        <textarea id="formProblem" placeholder="Ej: qué es o qué problema resuelve esta opción" data-i18n-ph="f_desc_ph"></textarea>
       </div>
       <div class="field">
-        <label>Notas / detalles clave</label>
-        <textarea id="formExplanation" placeholder="Ej: información adicional relevante para calificarla"></textarea>
+        <label for="formExplanation" data-i18n="f_notes">Notas / detalles clave</label>
+        <textarea id="formExplanation" placeholder="Ej: información adicional relevante para calificarla" data-i18n-ph="f_notes_ph"></textarea>
       </div>
       <div class="field field-btn">
         <button class="btn primary" id="addIdeaBtn" data-i18n="btn_addopt">+ Agregar opción</button>
@@ -693,13 +727,13 @@ footer{border-top:1px solid var(--line);padding-top:24px;margin-top:60px;display
         <div class="section-num" data-i18n="s2_num">02 — Criterios</div>
         <h2 class="section-title" data-i18n="s2_title">Criterios y pesos</h2>
       </div>
-      <p class="section-note" data-i18n="s2_note">Editen el nombre, la justificación y el peso de cada criterio, o agreguen/eliminen criterios propios.</p>
+      <p class="section-note" data-i18n="s2_note">Editen el nombre, la justificación y el peso de cada criterio, o agreguen y eliminen criterios propios.</p>
     </div>
     <div class="weights" id="weightsList"></div>
     <div class="balance-readout" id="weightsSumBar">
       <span class="label" data-i18n="w_sum">Suma de pesos</span>
       <span class="value" id="weightSum">100%</span>
-      <span class="label" id="weightWarning" style="color:var(--red);display:none;">— debe sumar 100% para que el puntaje sea comparable</span>
+      <span class="label" id="weightWarning" style="color:var(--red);display:none;" data-i18n="w_warning">— debe sumar 100% para que el puntaje sea comparable</span>
     </div>
     <div class="table-actions">
       <button class="btn" id="addCriterionBtn" data-i18n="btn_addcrit">+ Agregar criterio</button>
@@ -716,7 +750,7 @@ footer{border-top:1px solid var(--line);padding-top:24px;margin-top:60px;display
     </div>
     <div class="scoring-lock-note" id="scoringLockNote">
       <span class="icon">⚠</span>
-      <span>La calificación está bloqueada porque los pesos de los criterios no suman 100%. Ajusten los pesos en la sección 02 — Criterios para poder calificar las opciones.</span>
+      <span data-i18n="lock_note">La calificación está bloqueada porque los pesos de los criterios no suman 100%. Ajusten los pesos en la sección 02 — Criterios para poder calificar las opciones.</span>
     </div>
     <div class="table-scroll" id="matrixTableWrap"></div>
     <div class="table-actions">
@@ -743,15 +777,16 @@ footer{border-top:1px solid var(--line);padding-top:24px;margin-top:60px;display
     <div class="section-head">
       <div>
         <div class="section-num" data-i18n="s5_num">05 — Lectura</div>
-        <h2 class="section-title" data-i18n="s5_title">Conclusiones</h2>
+        <h2 class="section-title" data-i18n="s5_title">Conclusiones y robustez</h2>
       </div>
-      <p class="section-note" data-i18n="s5_note">Generadas automáticamente a partir del resultado actual. Se actualizan solas cada vez que cambian pesos o calificaciones.</p>
+      <p class="section-note" data-i18n="s5_note">Generadas automáticamente a partir del resultado actual: qué opción lidera, qué tan amplio es su margen y cuál es su punto débil. Se actualizan solas cada vez que cambian pesos o calificaciones.</p>
     </div>
     <div class="conclusions-card" id="conclusionsCard"></div>
   </section>
 
   <footer>
-    <span>Los valores viven solo en esta sesión del navegador — no se guardan al cerrar o recargar la página.</span>
+    <span class="footer-note" data-i18n="footer_note">Los valores viven solo en esta sesión del navegador: no se guardan al cerrar o recargar la página.</span>
+    <a class="back-link" href="https://jdc-portafolio.vercel.app" data-i18n="back_link">← Volver al portafolio</a>
   </footer>
 
 </div>
@@ -762,67 +797,352 @@ footer{border-top:1px solid var(--line);padding-top:24px;margin-top:60px;display
 <div class="modal-overlay" id="helpModalOverlay">
   <div class="modal-panel" id="helpModalPanel" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
     <div class="modal-header">
-      <button class="modal-close" id="helpModalClose" aria-label="Cerrar">✕</button>
-      <div class="modal-eyebrow">💡 Guía del método</div>
-      <h2 class="modal-title" id="helpModalTitle">¿Qué es una matriz de ponderación?</h2>
+      <button class="modal-close" id="helpModalClose" aria-label="Cerrar" data-i18n-aria="close">✕</button>
+      <div class="modal-eyebrow" data-i18n="help_eyebrow">💡 Guía del método</div>
+      <h2 class="modal-title" id="helpModalTitle" data-i18n="help_title">¿Qué es una matriz de ponderación?</h2>
     </div>
-    <div class="modal-body">
+    <div class="modal-body" id="helpModalBody" data-i18n-html="help_body"></div>
+  </div>
+</div>
 
+<script>
+/* ---------------- Persistencia segura (try/catch) ---------------- */
+const store = {
+  get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+};
+let LANG = store.get("jdc-lang") === "en" ? "en" : "es";
+
+/* ---------------- i18n ES/EN ---------------- */
+const I18N = {
+  es:{
+    doc_title:"Matriz de Ponderación — Decision Intelligence",
+    brand:"Matriz de Ponderación",
+    nav_domain:"Ámbito", nav_options:"01 Opciones", nav_criteria:"02 Criterios",
+    nav_matrix:"03 Matriz", nav_ranking:"04 Ranking", nav_conclusions:"05 Conclusiones",
+    btn_download:"Descargar", dl_png:"Imagen (PNG)", dl_xlsx:"Excel (.xlsx)",
+    theme_aria:"Cambiar tema", theme_to_light:"Cambiar a modo día", theme_to_dark:"Cambiar a modo noche",
+    eyebrow:"Decision Intelligence · Herramienta de decisión",
+    h1_main:"Matriz de Ponderación",
+    h1_sub:"Análisis de decisión con prueba de robustez",
+    help_btn_title:"¿Qué es la matriz de ponderación?", help_btn_aria:"Explicación del método",
+    sub:"Estructuren una decisión entre varias opciones: definan criterios y pesos, califiquen cada opción de 1 a 5 y revisen qué tan sólido es el resultado antes de decidir. Todo se recalcula en tiempo real.",
+    s0_num:"Configuración inicial", s0_title:"Elijan el ámbito de la matriz",
+    s0_note:"Cada ámbito trae criterios y opciones de ejemplo, editables. Al cambiar de ámbito se reemplaza todo lo que hay actualmente; se les pedirá confirmación.",
+    project_label:"Nombre del proyecto", optional:"(opcional)",
+    project_ph:"Ej: Compra de apartamento, contratación de un analista…",
+    kpi_domain:"Ámbito actual", kpi_project:"Proyecto", kpi_domain_fallback:"Ámbito",
+    kpi_options:"Opciones cargadas", kpi_weights:"Suma de pesos", kpi_leader:"Líder actual",
+    kpi_gap:"Margen sobre el 2.º lugar", kpi_status:"Estado de calificación",
+    kpi_counts:"{c} criterios · {o} opciones",
+    kpi_opt_empty:"Agréguenlas en la sección 01", kpi_opt_loaded:"Cargadas en la matriz",
+    kpi_active_crit:"{c} criterios activos",
+    kpi_no_options:"Sin opciones aún", kpi_gap_default:"Qué tan clara es la decisión",
+    kpi_unbalanced:"Pesos sin cuadrar a 100%", kpi_gap_locked:"Se calcula al desbloquear",
+    kpi_score:"Puntaje {s} / 5", kpi_gap_tight:"Resultado muy reñido: revisen criterios",
+    kpi_gap_vs:"vs. el segundo lugar", kpi_gap_add:"Agreguen otra opción para comparar",
+    st_nocrit:"Sin criterios", st_nocrit_sub:"Agreguen criterios en la sección 02",
+    st_noopt:"Sin opciones", st_noopt_sub:"Agreguen opciones en la sección 01",
+    st_locked:"Bloqueada", st_locked_sub:"Los pesos no suman 100%",
+    st_ready:"Lista", st_ready_sub:"Pueden calificar y decidir",
+    s1_num:"01 — Opciones", s1_title:"Agreguen las opciones a evaluar",
+    s1_note:"Nombre corto, descripción y notas adicionales. Cada opción que agreguen aparece automáticamente en la matriz de calificación más abajo.",
+    f_name:"Nombre corto", f_name_ph:"Ej: nombre de la opción a evaluar",
+    f_desc:"Descripción", f_desc_ph:"Ej: qué es o qué problema resuelve esta opción",
+    f_notes:"Notas / detalles clave", f_notes_ph:"Ej: información adicional relevante para calificarla",
+    btn_addopt:"+ Agregar opción",
+    cards_empty:"Aún no hay opciones. Agreguen la primera con el formulario de arriba.",
+    card_notes:"Notas", del_option:"Eliminar opción",
+    tip_desc:"Descripción: ", tip_notes:"Notas: ",
+    s2_num:"02 — Criterios", s2_title:"Criterios y pesos",
+    s2_note:"Editen el nombre, la justificación y el peso de cada criterio, o agreguen y eliminen criterios propios.",
+    crit_name_ph:"Ej: Precio, calidad, tiempo de entrega…",
+    crit_just_ph:"Ej: por qué es importante este criterio para la decisión",
+    lock_on:"Desbloquear peso", lock_off:"Bloquear peso", del_crit:"Eliminar criterio",
+    w_sum:"Suma de pesos", w_warning:"— debe sumar 100% para que el puntaje sea comparable",
+    btn_addcrit:"+ Agregar criterio",
+    s3_num:"03 — Calificación", s3_title:"Matriz de calificación",
+    s3_note:"1 = muy débil · 2 = débil · 3 = neutral · 4 = fuerte · 5 = muy fuerte",
+    lock_note:"La calificación está bloqueada porque los pesos de los criterios no suman 100%. Ajusten los pesos en la sección 02 — Criterios para poder calificar las opciones.",
+    m_empty_opt:"Agreguen al menos una opción en la sección 01 para calificarla aquí.",
+    m_empty_crit:"Agreguen al menos un criterio en la sección 02 para calificar opciones.",
+    m_option:"Opción", m_total:"Total",
+    btn_reset:"Reiniciar calificaciones de la matriz",
+    confirm_reset:"Esto reiniciará todas las calificaciones (1-5) de la matriz a un valor neutral. Los criterios, pesos y opciones no se modifican. ¿Continuar?",
+    s4_num:"04 — Resultado", s4_title:"Ranking en vivo",
+    s4_note:"Ordenado de mayor a menor puntaje ponderado. Si el orden contradice fuertemente su criterio, revisen los pesos antes de decidir.",
+    lb_empty:"El ranking aparecerá aquí en cuanto agreguen opciones.",
+    btn_png:"🖼 Descargar como imagen (PNG)", btn_xlsx:"📊 Descargar como Excel (.xlsx)",
+    s5_num:"05 — Lectura", s5_title:"Conclusiones y robustez",
+    s5_note:"Generadas automáticamente a partir del resultado actual: qué opción lidera, qué tan amplio es su margen y cuál es su punto débil. Se actualizan solas cada vez que cambian pesos o calificaciones.",
+    c_empty:"Agreguen opciones y criterios para ver las conclusiones aquí.",
+    c_unbalanced:"Cuadren los pesos a 100% en la sección 02 para generar las conclusiones.",
+    c_this_domain:"este ámbito",
+    c_evaluated:"Se evaluaron <strong>{o} opciones</strong> bajo <strong>{c} criterios</strong> en el ámbito de <strong>{d}</strong>.",
+    c_tight:"El margen con <strong>{n}</strong> es de apenas <strong>{g} puntos</strong>: un resultado muy reñido. Antes de decidir, revisen si los pesos reflejan bien sus prioridades reales.",
+    c_clear:"<strong>{l}</strong> supera a <strong>{n}</strong> por <strong>{g} puntos</strong>: una diferencia clara que respalda la decisión.",
+    c_add_second:"Agreguen al menos una segunda opción para poder comparar el margen de la decisión.",
+    c_strongest:"Su punto más fuerte es <strong>{n}</strong>, con calificación {s}/5.",
+    c_weak_crit:"Su punto más débil es <strong>{n}</strong>, con calificación {s}/5: vale la pena confirmar que este riesgo sea asumible antes de avanzar.",
+    c_weak_mild:"Su punto relativamente más débil es <strong>{n}</strong>, con calificación {s}/5, sin ser crítico.",
+    c_best:"Mejor opción:",
+    noname:"(sin nombre)",
+    footer_note:"Los valores viven solo en esta sesión del navegador: no se guardan al cerrar o recargar la página.",
+    back_link:"← Volver al portafolio",
+    hint_blank:"Sin ejemplos precargados: agreguen todo desde cero.",
+    hint_counts:"{c} criterios y {o} opciones de ejemplo, editables.",
+    confirm_domain:"Cambiar de ámbito reemplazará las opciones y criterios actuales por los del nuevo ámbito. Esta acción no se puede deshacer. ¿Continuar?",
+    exp_need_items:"Agreguen al menos un criterio y una opción antes de exportar.",
+    exp_need_100:"Los pesos deben sumar 100% antes de exportar.",
+    exp_lib_error:"No se pudo cargar la librería de exportación. Verifiquen su conexión a internet.",
+    exp_custom:"Ámbito personalizado",
+    exp_png_busy:"Generando imagen…", exp_png_ok:"Imagen descargada.", exp_png_fail:"No se pudo generar la imagen.",
+    exp_xlsx_busy:"Generando archivo Excel…", exp_xlsx_ok:"Excel descargado.", exp_xlsx_fail:"No se pudo generar el Excel.",
+    exp_brand:"Matriz de ponderación", exp_result:"Resultado — {t}",
+    exp_meta:"Suma de pesos: {w}% · Escala de calificación 1 a 5 · {n} opciones evaluadas",
+    exp_weighted:"Puntaje<br>ponderado",
+    exp_source:"Fuente: generado con Matriz de ponderación · {d} · Cada celda es el puntaje (1-5) multiplicado por el peso del criterio.",
+    exp_file:"matriz-de-ponderacion",
+    x_title:"Matriz de ponderación — {t}",
+    x_generated:"Generado el {d} · Escala de calificación 1 a 5 · cada columna de criterio muestra el puntaje × su peso",
+    x_weighted:"Puntaje ponderado", x_rank:"Ranking",
+    x_criterion:"Criterio", x_weight:"Peso (%)", x_just:"Justificación",
+    x_desc:"Descripción", x_notes:"Notas",
+    x_sheet_rank:"Ranking", x_sheet_crit:"Criterios", x_sheet_detail:"Detalle de opciones",
+    close:"Cerrar",
+    help_eyebrow:"💡 Guía del método",
+    help_title:"¿Qué es una matriz de ponderación?",
+    help_body:`
     <div class="modal-section">
       <h3>Definición</h3>
-      <p>Es una herramienta de análisis de decisiones que permite comparar varias opciones frente a varios criterios al mismo tiempo, asignando a cada criterio una <strong>importancia relativa (peso)</strong> y a cada opción una <strong>calificación</strong> en ese criterio. El resultado es un puntaje único por opción, calculado de forma objetiva y trazable, en vez de decidir "a ojo".</p>
+      <p>Es una herramienta de análisis de decisiones que permite comparar varias opciones frente a varios criterios al mismo tiempo, asignando a cada criterio una <strong>importancia relativa (peso)</strong> y a cada opción una <strong>calificación</strong> en ese criterio. El resultado es un puntaje único por opción, calculado de forma trazable, en vez de decidir "a ojo".</p>
     </div>
-
+    <div class="modal-section">
+      <h3>Decision Intelligence</h3>
+      <p>Decision Intelligence es el enfoque de tratar las decisiones como un proceso que se puede diseñar, revisar y defender: hacer explícitos los supuestos, cuantificar los <strong>trade-offs</strong> y comprobar qué tan sólido es el resultado antes de actuar. Esta herramienta aplica ese enfoque a decisiones entre varias opciones.</p>
+    </div>
     <div class="modal-section">
       <h3>¿De dónde viene?</h3>
       <p>Pertenece a la familia de métodos de <strong>Análisis de Decisión Multicriterio</strong> (MCDA, por sus siglas en inglés — Multi-Criteria Decision Analysis), un campo de la investigación de operaciones que se desarrolló a mediados del siglo XX para estructurar decisiones con múltiples factores en conflicto.</p>
       <p>Esta variante específica se conoce técnicamente como <strong>modelo de suma ponderada</strong> (Weighted Sum Model) o "Grid Analysis". Se popularizó especialmente en gestión de calidad e ingeniería de producto de la mano de métodos como la <strong>matriz de Pugh</strong> (Stuart Pugh, años 80, para comparar conceptos de diseño). Es también la base conceptual, simplificada, de métodos más complejos como el <strong>AHP</strong> (Analytic Hierarchy Process) de Thomas Saaty, que usa comparaciones por pares en vez de pesos directos.</p>
     </div>
-
     <div class="modal-section">
       <h3>¿Para qué sirve?</h3>
-      <p>Es útil cuando ninguna opción gana en todos los frentes — es decir, cuando hay <strong>trade-offs</strong> reales entre alternativas (una es más barata pero más lenta, otra es mejor pero más riesgosa, etc). Ayuda a:</p>
+      <p>Es útil cuando ninguna opción gana en todos los frentes, es decir, cuando hay <strong>trade-offs</strong> reales entre alternativas (una es más barata pero más lenta, otra es mejor pero más riesgosa, etc.). Ayuda a:</p>
       <ul>
         <li>Hacer explícitas las prioridades del equipo (los pesos) en vez de dejarlas implícitas.</li>
         <li>Reducir el sesgo de decidir por la opción más reciente, más llamativa o más familiar.</li>
-        <li>Generar un resultado que se puede explicar y defender ante otros — cada número tiene un origen rastreable.</li>
+        <li>Generar un resultado que se puede explicar y defender ante otros: cada número tiene un origen rastreable.</li>
         <li>Detectar desacuerdos reales en el equipo: si dos personas llegan a resultados distintos, casi siempre es porque difieren en los pesos, no en los hechos.</li>
       </ul>
     </div>
-
     <div class="modal-section">
       <h3>¿Cómo funciona?</h3>
       <ol>
         <li>Se listan las <strong>opciones</strong> a evaluar.</li>
         <li>Se definen los <strong>criterios</strong> relevantes para decidir.</li>
-        <li>Se le asigna un <strong>peso</strong> a cada criterio, según su importancia — todos los pesos deben sumar 100%.</li>
+        <li>Se le asigna un <strong>peso</strong> a cada criterio, según su importancia; todos los pesos deben sumar 100%.</li>
         <li>Se <strong>califica</strong> cada opción en cada criterio, normalmente en una escala fija (aquí, de 1 a 5).</li>
         <li>Cada calificación se multiplica por el peso de su criterio.</li>
-        <li>Se suman esos productos por fila — ese es el <strong>puntaje ponderado total</strong> de cada opción.</li>
+        <li>Se suman esos productos por fila: ese es el <strong>puntaje ponderado total</strong> de cada opción.</li>
         <li>Se ordenan las opciones de mayor a menor puntaje.</li>
       </ol>
     </div>
-
     <div class="modal-section">
       <h3>La fórmula</h3>
       <div class="modal-formula">Puntaje(opción) = Σ [ peso(criterio) × calificación(opción, criterio) ]</div>
-      <p class="modal-formula-note">Por eso en esta herramienta cada celda de la matriz es exactamente eso: la calificación (1-5) multiplicada por el peso del criterio — no un valor arbitrario.</p>
+      <p class="modal-formula-note">Por eso en esta herramienta cada celda de la matriz es exactamente eso: la calificación (1-5) multiplicada por el peso del criterio, no un valor arbitrario.</p>
     </div>
-
+    <div class="modal-section">
+      <h3>Prueba de robustez del resultado</h3>
+      <p>Un ranking por sí solo no dice qué tan confiable es la decisión. Por eso la herramienta revisa automáticamente tres señales antes de dar una lectura:</p>
+      <ul>
+        <li><strong>Pesos cuadrados.</strong> La calificación se bloquea si los pesos no suman 100%: sin esa condición los puntajes no son comparables.</li>
+        <li><strong>Margen sobre el segundo lugar.</strong> Si la diferencia entre las dos primeras opciones es menor a 0,30 puntos (en la escala de 1 a 5), el resultado se marca como reñido: un ajuste pequeño en pesos o calificaciones podría cambiar el orden.</li>
+        <li><strong>Punto débil de la opción líder.</strong> Como el método compensa unos criterios con otros, se señala el criterio en el que la líder califica más bajo; si es 2 o menos, se marca como un riesgo que conviene confirmar.</li>
+      </ul>
+      <p>Una forma práctica de poner a prueba el resultado: muevan el peso del criterio que más dudas les genere y observen si el líder cambia. Si cambia con ajustes pequeños, la decisión depende de esa prioridad y conviene discutirla antes de decidir.</p>
+    </div>
     <div class="modal-section">
       <h3>Limitaciones a tener en cuenta</h3>
       <ul>
-        <li>Los pesos y las calificaciones siguen siendo <strong>subjetivos</strong>. El método no elimina el sesgo humano, solo lo hace explícito, discutible y ajustable — que ya es una ganancia importante.</li>
-        <li>Asume <strong>compensación total</strong> entre criterios: un puntaje muy bajo en un criterio puede "esconderse" detrás de puntajes altos en otros. Por eso conviene revisar también los puntos débiles de la opción ganadora, no solo su total (así lo hace la sección de Conclusiones de esta herramienta).</li>
-        <li>Es sensible a cómo se definen los criterios: si dos criterios miden en el fondo lo mismo, ese factor queda sobre-ponderado sin que se note a simple vista.</li>
+        <li>Los pesos y las calificaciones siguen siendo <strong>subjetivos</strong>. El método no elimina el sesgo humano, solo lo hace explícito, discutible y ajustable, que ya es una ganancia importante.</li>
+        <li>Asume <strong>compensación total</strong> entre criterios: un puntaje muy bajo en un criterio puede "esconderse" detrás de puntajes altos en otros. Por eso conviene revisar también los puntos débiles de la opción ganadora, no solo su total (así lo hace la sección 05 de esta herramienta).</li>
+        <li>Es sensible a cómo se definen los criterios: si dos criterios miden en el fondo lo mismo, ese factor queda sobreponderado sin que se note a simple vista.</li>
+        <li>Las calificaciones de 1 a 5 son un orden, pero el cálculo las trata como números: la distancia entre un 2 y un 3 se asume igual a la que hay entre un 4 y un 5.</li>
+      </ul>
+    </div>`
+  },
+  en:{
+    doc_title:"Weighted Decision Matrix — Decision Intelligence",
+    brand:"Weighted Decision Matrix",
+    nav_domain:"Scope", nav_options:"01 Options", nav_criteria:"02 Criteria",
+    nav_matrix:"03 Matrix", nav_ranking:"04 Ranking", nav_conclusions:"05 Conclusions",
+    btn_download:"Download", dl_png:"Image (PNG)", dl_xlsx:"Excel (.xlsx)",
+    theme_aria:"Toggle theme", theme_to_light:"Switch to light mode", theme_to_dark:"Switch to dark mode",
+    eyebrow:"Decision Intelligence · Decision tool",
+    h1_main:"Weighted Decision Matrix",
+    h1_sub:"Decision analysis with a robustness check",
+    help_btn_title:"What is a weighted decision matrix?", help_btn_aria:"Method explanation",
+    sub:"Structure a decision between several options: set criteria and weights, score each option from 1 to 5 and check how solid the result is before you decide. Everything updates in real time.",
+    s0_num:"Initial setup", s0_title:"Choose the matrix scope",
+    s0_note:"Each scope comes with editable sample criteria and options. Switching scope replaces everything currently loaded; you'll be asked to confirm.",
+    project_label:"Project name", optional:"(optional)",
+    project_ph:"e.g. Buying an apartment, hiring an analyst…",
+    kpi_domain:"Current scope", kpi_project:"Project", kpi_domain_fallback:"Scope",
+    kpi_options:"Options loaded", kpi_weights:"Sum of weights", kpi_leader:"Current leader",
+    kpi_gap:"Lead over 2nd place", kpi_status:"Scoring status",
+    kpi_counts:"{c} criteria · {o} options",
+    kpi_opt_empty:"Add them in section 01", kpi_opt_loaded:"Loaded into the matrix",
+    kpi_active_crit:"{c} active criteria",
+    kpi_no_options:"No options yet", kpi_gap_default:"How clear-cut the decision is",
+    kpi_unbalanced:"Weights don't add up to 100%", kpi_gap_locked:"Calculated once unlocked",
+    kpi_score:"Score {s} / 5", kpi_gap_tight:"Very close call: review the criteria",
+    kpi_gap_vs:"vs. second place", kpi_gap_add:"Add another option to compare",
+    st_nocrit:"No criteria", st_nocrit_sub:"Add criteria in section 02",
+    st_noopt:"No options", st_noopt_sub:"Add options in section 01",
+    st_locked:"Locked", st_locked_sub:"Weights don't add up to 100%",
+    st_ready:"Ready", st_ready_sub:"You can score and decide",
+    s1_num:"01 — Options", s1_title:"Add the options to evaluate",
+    s1_note:"Short name, description and additional notes. Every option you add appears automatically in the scoring matrix below.",
+    f_name:"Short name", f_name_ph:"e.g. name of the option to evaluate",
+    f_desc:"Description", f_desc_ph:"e.g. what it is or what problem this option solves",
+    f_notes:"Notes / key details", f_notes_ph:"e.g. additional information that helps score it",
+    btn_addopt:"+ Add option",
+    cards_empty:"No options yet. Add the first one with the form above.",
+    card_notes:"Notes", del_option:"Delete option",
+    tip_desc:"Description: ", tip_notes:"Notes: ",
+    s2_num:"02 — Criteria", s2_title:"Criteria and weights",
+    s2_note:"Edit the name, rationale and weight of each criterion, or add and remove your own criteria.",
+    crit_name_ph:"e.g. Price, quality, delivery time…",
+    crit_just_ph:"e.g. why this criterion matters for the decision",
+    lock_on:"Unlock weight", lock_off:"Lock weight", del_crit:"Delete criterion",
+    w_sum:"Sum of weights", w_warning:"— must add up to 100% for scores to be comparable",
+    btn_addcrit:"+ Add criterion",
+    s3_num:"03 — Scoring", s3_title:"Scoring matrix",
+    s3_note:"1 = very weak · 2 = weak · 3 = neutral · 4 = strong · 5 = very strong",
+    lock_note:"Scoring is locked because the criteria weights don't add up to 100%. Adjust the weights in section 02 — Criteria to score the options.",
+    m_empty_opt:"Add at least one option in section 01 to score it here.",
+    m_empty_crit:"Add at least one criterion in section 02 to score options.",
+    m_option:"Option", m_total:"Total",
+    btn_reset:"Reset matrix scores",
+    confirm_reset:"This will reset every score (1-5) in the matrix to a neutral value. Criteria, weights and options stay as they are. Continue?",
+    s4_num:"04 — Result", s4_title:"Live ranking",
+    s4_note:"Sorted from highest to lowest weighted score. If the order strongly contradicts your judgement, review the weights before deciding.",
+    lb_empty:"The ranking will appear here as soon as you add options.",
+    btn_png:"🖼 Download as image (PNG)", btn_xlsx:"📊 Download as Excel (.xlsx)",
+    s5_num:"05 — Reading", s5_title:"Conclusions and robustness",
+    s5_note:"Generated automatically from the current result: which option leads, how wide its lead is and where it is weakest. They update on their own whenever weights or scores change.",
+    c_empty:"Add options and criteria to see the conclusions here.",
+    c_unbalanced:"Balance the weights to 100% in section 02 to generate the conclusions.",
+    c_this_domain:"this scope",
+    c_evaluated:"<strong>{o} options</strong> were evaluated against <strong>{c} criteria</strong> in the <strong>{d}</strong> scope.",
+    c_tight:"The lead over <strong>{n}</strong> is only <strong>{g} points</strong>: a very close call. Before deciding, check whether the weights really reflect your priorities.",
+    c_clear:"<strong>{l}</strong> beats <strong>{n}</strong> by <strong>{g} points</strong>: a clear gap that supports the decision.",
+    c_add_second:"Add at least a second option to compare the decision margin.",
+    c_strongest:"Its strongest point is <strong>{n}</strong>, scored {s}/5.",
+    c_weak_crit:"Its weakest point is <strong>{n}</strong>, scored {s}/5: worth confirming this risk is acceptable before moving forward.",
+    c_weak_mild:"Its relatively weakest point is <strong>{n}</strong>, scored {s}/5, which is not critical.",
+    c_best:"Best option:",
+    noname:"(unnamed)",
+    footer_note:"Values live only in this browser session: they are not saved when you close or reload the page.",
+    back_link:"← Back to portfolio",
+    hint_blank:"No preloaded examples: build everything from scratch.",
+    hint_counts:"{c} sample criteria and {o} sample options, all editable.",
+    confirm_domain:"Switching scope will replace the current options and criteria with those of the new scope. This can't be undone. Continue?",
+    exp_need_items:"Add at least one criterion and one option before exporting.",
+    exp_need_100:"Weights must add up to 100% before exporting.",
+    exp_lib_error:"The export library couldn't be loaded. Check your internet connection.",
+    exp_custom:"Custom scope",
+    exp_png_busy:"Generating image…", exp_png_ok:"Image downloaded.", exp_png_fail:"The image couldn't be generated.",
+    exp_xlsx_busy:"Generating Excel file…", exp_xlsx_ok:"Excel downloaded.", exp_xlsx_fail:"The Excel file couldn't be generated.",
+    exp_brand:"Weighted decision matrix", exp_result:"Result — {t}",
+    exp_meta:"Sum of weights: {w}% · Scoring scale 1 to 5 · {n} options evaluated",
+    exp_weighted:"Weighted<br>score",
+    exp_source:"Source: generated with the Weighted Decision Matrix · {d} · Each cell is the score (1-5) multiplied by the criterion weight.",
+    exp_file:"weighted-decision-matrix",
+    x_title:"Weighted decision matrix — {t}",
+    x_generated:"Generated on {d} · Scoring scale 1 to 5 · each criterion column shows score × weight",
+    x_weighted:"Weighted score", x_rank:"Rank",
+    x_criterion:"Criterion", x_weight:"Weight (%)", x_just:"Rationale",
+    x_desc:"Description", x_notes:"Notes",
+    x_sheet_rank:"Ranking", x_sheet_crit:"Criteria", x_sheet_detail:"Option details",
+    close:"Close",
+    help_eyebrow:"💡 Method guide",
+    help_title:"What is a weighted decision matrix?",
+    help_body:`
+    <div class="modal-section">
+      <h3>Definition</h3>
+      <p>It is a decision-analysis tool that compares several options against several criteria at once, giving each criterion a <strong>relative importance (weight)</strong> and each option a <strong>score</strong> on that criterion. The result is a single, traceable score per option instead of a gut-feel call.</p>
+    </div>
+    <div class="modal-section">
+      <h3>Decision Intelligence</h3>
+      <p>Decision Intelligence treats decisions as a process you can design, review and defend: make assumptions explicit, quantify the <strong>trade-offs</strong> and check how solid the result is before acting. This tool applies that approach to choices between several options.</p>
+    </div>
+    <div class="modal-section">
+      <h3>Where does it come from?</h3>
+      <p>It belongs to the family of <strong>Multi-Criteria Decision Analysis</strong> (MCDA) methods, a branch of operations research developed in the mid-20th century to structure decisions with several conflicting factors.</p>
+      <p>This particular variant is technically known as the <strong>Weighted Sum Model</strong> or "Grid Analysis". It became especially popular in quality management and product engineering through methods such as the <strong>Pugh matrix</strong> (Stuart Pugh, 1980s, for comparing design concepts). It is also the simplified conceptual basis of more complex methods such as Thomas Saaty's <strong>AHP</strong> (Analytic Hierarchy Process), which uses pairwise comparisons instead of direct weights.</p>
+    </div>
+    <div class="modal-section">
+      <h3>What is it for?</h3>
+      <p>It is useful when no option wins on every front, that is, when there are real <strong>trade-offs</strong> between alternatives (one is cheaper but slower, another is better but riskier, and so on). It helps to:</p>
+      <ul>
+        <li>Make the team's priorities (the weights) explicit instead of leaving them implicit.</li>
+        <li>Reduce the bias of picking the most recent, most eye-catching or most familiar option.</li>
+        <li>Produce a result you can explain and defend: every number has a traceable origin.</li>
+        <li>Surface real disagreements in the team: when two people reach different results, it is almost always because they weigh things differently, not because they disagree on the facts.</li>
       </ul>
     </div>
-
+    <div class="modal-section">
+      <h3>How does it work?</h3>
+      <ol>
+        <li>List the <strong>options</strong> to evaluate.</li>
+        <li>Define the <strong>criteria</strong> that matter for the decision.</li>
+        <li>Give each criterion a <strong>weight</strong> according to its importance; all weights must add up to 100%.</li>
+        <li><strong>Score</strong> each option on each criterion, usually on a fixed scale (here, 1 to 5).</li>
+        <li>Multiply each score by the weight of its criterion.</li>
+        <li>Add up those products per row: that is each option's <strong>total weighted score</strong>.</li>
+        <li>Rank the options from highest to lowest score.</li>
+      </ol>
     </div>
-  </div>
-</div>
+    <div class="modal-section">
+      <h3>The formula</h3>
+      <div class="modal-formula">Score(option) = Σ [ weight(criterion) × score(option, criterion) ]</div>
+      <p class="modal-formula-note">That is why every cell in this tool's matrix is exactly that: the score (1-5) multiplied by the criterion weight, not an arbitrary value.</p>
+    </div>
+    <div class="modal-section">
+      <h3>Robustness check</h3>
+      <p>A ranking alone doesn't tell you how reliable the decision is. That is why the tool automatically checks three signals before giving a reading:</p>
+      <ul>
+        <li><strong>Balanced weights.</strong> Scoring is locked until the weights add up to 100%: without that, scores are not comparable.</li>
+        <li><strong>Lead over second place.</strong> If the gap between the top two options is below 0.30 points (on the 1-to-5 scale), the result is flagged as a close call: a small change in weights or scores could flip the order.</li>
+        <li><strong>The leader's weak spot.</strong> Because the method lets criteria offset each other, the tool flags the criterion where the leader scores lowest; if it is 2 or below, it is marked as a risk worth confirming.</li>
+      </ul>
+      <p>A practical way to stress-test the result: move the weight of the criterion you are least sure about and see whether the leader changes. If it flips after small adjustments, the decision hinges on that priority and it is worth discussing before you decide.</p>
+    </div>
+    <div class="modal-section">
+      <h3>Limitations to keep in mind</h3>
+      <ul>
+        <li>Weights and scores are still <strong>subjective</strong>. The method doesn't remove human bias; it makes it explicit, open to discussion and adjustable, which is already a significant gain.</li>
+        <li>It assumes <strong>full compensation</strong> between criteria: a very low score on one criterion can "hide" behind high scores on others. That is why it pays to review the winning option's weak spots, not just its total (section 05 of this tool does exactly that).</li>
+        <li>It is sensitive to how criteria are defined: if two criteria essentially measure the same thing, that factor ends up over-weighted without it being obvious.</li>
+        <li>The 1-to-5 scores are an ordering, but the calculation treats them as numbers: the distance between a 2 and a 3 is assumed to equal the distance between a 4 and a 5.</li>
+      </ul>
+    </div>`
+  }
+};
 
-<script>
+function t(key, vars){
+  let s = I18N[LANG][key];
+  if(s === undefined) s = I18N.es[key];
+  if(s === undefined) return key;
+  if(vars) Object.keys(vars).forEach(k => { s = s.split("{" + k + "}").join(vars[k]); });
+  return s;
+}
+const pt = v => (v && typeof v === "object") ? (v[LANG] !== undefined ? v[LANG] : v.es) : (v || "");
+const L = (es, en) => ({es, en});
+
 /* ---------------- Data model ---------------- */
 let critCounter = 0;
 let ideaCounter = 0;
@@ -838,125 +1158,125 @@ function defaultScores(){
   return s;
 }
 
-/* ---------------- Presets por ámbito ---------------- */
+/* ---------------- Presets por ámbito (ES/EN) ---------------- */
 const PRESETS = {
   blank: {
-    label: "En blanco",
+    label: L("En blanco", "Blank"),
     criteria: [],
     ideas: []
   },
   negocio: {
-    label: "Idea de negocio",
+    label: L("Idea de negocio", "Business idea"),
     criteria: [
-      {name:"Ajuste a tiempo disponible",               just:"Ejecutable con el tiempo real que el equipo puede dedicar.", weight:20},
-      {name:"Defensibilidad / dominio propio",           just:"Usa una ventaja real del equipo, no una idea genérica fácil de copiar.", weight:20},
-      {name:"Tiempo a primer ingreso",                   just:"Con runway limitado, el flujo de caja temprano reduce el riesgo.", weight:15},
-      {name:"Viabilidad sin desarrollador",               just:"Construible con no-code + APIs de IA o desarrollo mínimo subcontratado.", weight:15},
-      {name:"Costo de validación dentro de presupuesto",  just:"El MVP o piloto debe caber holgadamente en el presupuesto disponible.", weight:10},
-      {name:"Tamaño de mercado",                          just:"Suficiente demanda real para justificar el esfuerzo.", weight:10},
-      {name:"Escalabilidad post-validación",              just:"Puede volverse repetible sin vender solo horas-hombre.", weight:10},
+      {name:L("Ajuste a tiempo disponible","Fit with available time"), just:L("Ejecutable con el tiempo real que el equipo puede dedicar.","Doable with the time the team can realistically commit."), weight:20},
+      {name:L("Defensibilidad / dominio propio","Defensibility / own expertise"), just:L("Usa una ventaja real del equipo, no una idea genérica fácil de copiar.","Builds on a real team advantage, not a generic idea that is easy to copy."), weight:20},
+      {name:L("Tiempo a primer ingreso","Time to first revenue"), just:L("Con runway limitado, el flujo de caja temprano reduce el riesgo.","With limited runway, early cash flow lowers the risk."), weight:15},
+      {name:L("Viabilidad sin desarrollador","Feasible without a developer"), just:L("Construible con no-code + APIs de IA o desarrollo mínimo subcontratado.","Buildable with no-code + AI APIs or minimal outsourced development."), weight:15},
+      {name:L("Costo de validación dentro de presupuesto","Validation cost within budget"), just:L("El MVP o piloto debe caber holgadamente en el presupuesto disponible.","The MVP or pilot must fit comfortably within the available budget."), weight:10},
+      {name:L("Tamaño de mercado","Market size"), just:L("Suficiente demanda real para justificar el esfuerzo.","Enough real demand to justify the effort."), weight:10},
+      {name:L("Escalabilidad post-validación","Scalability after validation"), just:L("Puede volverse repetible sin vender solo horas-hombre.","Can become repeatable without selling only billable hours."), weight:10},
     ],
     ideas: [
-      {name:"Herramienta forecasting/pricing retail multi-SKU",
-       description:"PYMEs de retail no tienen equipo de analítica para estimar compras y precios por SKU.",
-       notes:"App que automatiza estimados de compra y pricing usando datos de ventas históricas.",
+      {name:L("Herramienta forecasting/pricing retail multi-SKU","Multi-SKU retail forecasting/pricing tool"),
+       description:L("PYMEs de retail no tienen equipo de analítica para estimar compras y precios por SKU.","Retail SMBs have no analytics team to estimate purchases and prices per SKU."),
+       notes:L("App que automatiza estimados de compra y pricing usando datos de ventas históricas.","App that automates purchase estimates and pricing using historical sales data."),
        scores:[4,4,3,3,3,3,4]},
-      {name:"SaaS gestión de conformidad/importaciones",
-       description:"Empresas importadoras gestionan manualmente certificados de conformidad por país.",
-       notes:"Plataforma que centraliza y automatiza el seguimiento de requisitos normativos por producto.",
+      {name:L("SaaS gestión de conformidad/importaciones","Compliance/import management SaaS"),
+       description:L("Empresas importadoras gestionan manualmente certificados de conformidad por país.","Importers manage conformity certificates by country manually."),
+       notes:L("Plataforma que centraliza y automatiza el seguimiento de requisitos normativos por producto.","Platform that centralizes and automates tracking of regulatory requirements per product."),
        scores:[3,5,2,2,3,2,4]},
-      {name:"Agente IA de reportes ejecutivos (SAP/Excel/PBI)",
-       description:"Consolidar reportes de ventas y márgenes manualmente toma días cada mes.",
-       notes:"Conecta SAP/Excel/Power BI y genera el resumen ejecutivo automáticamente con IA.",
+      {name:L("Agente IA de reportes ejecutivos (SAP/Excel/PBI)","AI agent for executive reports (SAP/Excel/PBI)"),
+       description:L("Consolidar reportes de ventas y márgenes manualmente toma días cada mes.","Consolidating sales and margin reports by hand takes days every month."),
+       notes:L("Conecta SAP/Excel/Power BI y genera el resumen ejecutivo automáticamente con IA.","Connects SAP/Excel/Power BI and generates the executive summary automatically with AI."),
        scores:[5,3,4,5,4,3,3]},
-      {name:"Consultoría/agencia de IA aplicada a retail",
-       description:"Empresas de retail quieren adoptar IA pero no saben por dónde empezar ni tienen equipo técnico.",
-       notes:"Servicio que implementa automatizaciones puntuales (reporting, forecasting) para clientes de retail.",
+      {name:L("Consultoría/agencia de IA aplicada a retail","Applied AI consultancy/agency for retail"),
+       description:L("Empresas de retail quieren adoptar IA pero no saben por dónde empezar ni tienen equipo técnico.","Retail companies want to adopt AI but don't know where to start and have no technical team."),
+       notes:L("Servicio que implementa automatizaciones puntuales (reporting, forecasting) para clientes de retail.","Service that implements targeted automations (reporting, forecasting) for retail clients."),
        scores:[5,4,5,5,5,4,2]},
     ]
   },
   proveedor: {
-    label: "Selección de proveedor",
+    label: L("Selección de proveedor", "Supplier selection"),
     criteria: [
-      {name:"Precio / costo total",              just:"Costo directo más costos ocultos (envío, mínimos de compra, etc.).", weight:25},
-      {name:"Calidad del producto o servicio",    just:"Consistencia y nivel de defectos o reclamos.", weight:20},
-      {name:"Tiempos de entrega",                 just:"Cumplimiento de plazos y capacidad de respuesta ante urgencias.", weight:15},
-      {name:"Confiabilidad / reputación",         just:"Historial con otros clientes, años en el mercado, referencias.", weight:15},
-      {name:"Condiciones de pago",                just:"Plazos de crédito, flexibilidad, moneda de pago.", weight:10},
-      {name:"Soporte postventa",                  just:"Atención a garantías, devoluciones y reclamos.", weight:10},
-      {name:"Alineación con sostenibilidad",      just:"Prácticas ambientales o sociales si son relevantes para la empresa.", weight:5},
+      {name:L("Precio / costo total","Price / total cost"), just:L("Costo directo más costos ocultos (envío, mínimos de compra, etc.).","Direct cost plus hidden costs (shipping, minimum order quantities, etc.)."), weight:25},
+      {name:L("Calidad del producto o servicio","Product or service quality"), just:L("Consistencia y nivel de defectos o reclamos.","Consistency and level of defects or complaints."), weight:20},
+      {name:L("Tiempos de entrega","Delivery times"), just:L("Cumplimiento de plazos y capacidad de respuesta ante urgencias.","On-time delivery and responsiveness to urgent requests."), weight:15},
+      {name:L("Confiabilidad / reputación","Reliability / reputation"), just:L("Historial con otros clientes, años en el mercado, referencias.","Track record with other clients, years in the market, references."), weight:15},
+      {name:L("Condiciones de pago","Payment terms"), just:L("Plazos de crédito, flexibilidad, moneda de pago.","Credit terms, flexibility, payment currency."), weight:10},
+      {name:L("Soporte postventa","After-sales support"), just:L("Atención a garantías, devoluciones y reclamos.","Handling of warranties, returns and complaints."), weight:10},
+      {name:L("Alineación con sostenibilidad","Sustainability alignment"), just:L("Prácticas ambientales o sociales si son relevantes para la empresa.","Environmental or social practices, if relevant to the company."), weight:5},
     ],
     ideas: [
-      {name:"Proveedor A", description:"Ej: proveedor local, precio medio, entrega rápida.", notes:"", scores:[3,3,4,3,3,3,3]},
-      {name:"Proveedor B", description:"Ej: proveedor internacional, precio bajo, entrega más lenta.", notes:"", scores:[4,3,2,3,3,2,2]},
-      {name:"Proveedor C", description:"Ej: proveedor premium, precio alto, alta calidad y soporte.", notes:"", scores:[2,5,4,4,3,4,3]},
+      {name:L("Proveedor A","Supplier A"), description:L("Ej: proveedor local, precio medio, entrega rápida.","e.g. local supplier, mid-range price, fast delivery."), notes:L("",""), scores:[3,3,4,3,3,3,3]},
+      {name:L("Proveedor B","Supplier B"), description:L("Ej: proveedor internacional, precio bajo, entrega más lenta.","e.g. international supplier, low price, slower delivery."), notes:L("",""), scores:[4,3,2,3,3,2,2]},
+      {name:L("Proveedor C","Supplier C"), description:L("Ej: proveedor premium, precio alto, alta calidad y soporte.","e.g. premium supplier, high price, top quality and support."), notes:L("",""), scores:[2,5,4,4,3,4,3]},
     ]
   },
   contratacion: {
-    label: "Contratación de personal",
+    label: L("Contratación de personal", "Hiring"),
     criteria: [
-      {name:"Experiencia relevante",            just:"Trayectoria directamente aplicable al rol.", weight:25},
-      {name:"Habilidades técnicas",             just:"Dominio de las herramientas o competencias específicas requeridas.", weight:20},
-      {name:"Fit cultural",                     just:"Compatibilidad con la forma de trabajo y valores del equipo.", weight:15},
-      {name:"Comunicación",                     just:"Claridad al explicar ideas y trabajar con otros.", weight:10},
-      {name:"Expectativa salarial / disponibilidad", just:"Ajuste con el presupuesto y tiempos de incorporación.", weight:15},
-      {name:"Potencial de crecimiento",         just:"Capacidad de asumir más responsabilidad con el tiempo.", weight:10},
-      {name:"Referencias",                      just:"Validación de desempeño previo por terceros.", weight:5},
+      {name:L("Experiencia relevante","Relevant experience"), just:L("Trayectoria directamente aplicable al rol.","Track record directly applicable to the role."), weight:25},
+      {name:L("Habilidades técnicas","Technical skills"), just:L("Dominio de las herramientas o competencias específicas requeridas.","Command of the specific tools or skills required."), weight:20},
+      {name:L("Fit cultural","Culture fit"), just:L("Compatibilidad con la forma de trabajo y valores del equipo.","Compatibility with the team's way of working and values."), weight:15},
+      {name:L("Comunicación","Communication"), just:L("Claridad al explicar ideas y trabajar con otros.","Clarity when explaining ideas and working with others."), weight:10},
+      {name:L("Expectativa salarial / disponibilidad","Salary expectations / availability"), just:L("Ajuste con el presupuesto y tiempos de incorporación.","Fit with the budget and start date."), weight:15},
+      {name:L("Potencial de crecimiento","Growth potential"), just:L("Capacidad de asumir más responsabilidad con el tiempo.","Ability to take on more responsibility over time."), weight:10},
+      {name:L("Referencias","References"), just:L("Validación de desempeño previo por terceros.","Third-party validation of past performance."), weight:5},
     ],
     ideas: [
-      {name:"Candidato 1", description:"Ej: más experiencia, expectativa salarial alta.", notes:"", scores:[4,4,3,4,2,3,4]},
-      {name:"Candidato 2", description:"Ej: menos experiencia, gran potencial, salario ajustado.", notes:"", scores:[2,3,4,4,5,5,3]},
-      {name:"Candidato 3", description:"Ej: perfil equilibrado, buenas referencias.", notes:"", scores:[3,3,4,3,3,3,5]},
+      {name:L("Candidato 1","Candidate 1"), description:L("Ej: más experiencia, expectativa salarial alta.","e.g. more experience, high salary expectations."), notes:L("",""), scores:[4,4,3,4,2,3,4]},
+      {name:L("Candidato 2","Candidate 2"), description:L("Ej: menos experiencia, gran potencial, salario ajustado.","e.g. less experience, high potential, tight salary."), notes:L("",""), scores:[2,3,4,4,5,5,3]},
+      {name:L("Candidato 3","Candidate 3"), description:L("Ej: perfil equilibrado, buenas referencias.","e.g. balanced profile, good references."), notes:L("",""), scores:[3,3,4,3,3,3,5]},
     ]
   },
   software: {
-    label: "Software / herramienta",
+    label: L("Software / herramienta", "Software / tool"),
     criteria: [
-      {name:"Funcionalidades cubiertas",        just:"Qué tan bien resuelve el caso de uso principal.", weight:25},
-      {name:"Facilidad de uso",                 just:"Curva de aprendizaje para el equipo.", weight:15},
-      {name:"Costo / licenciamiento",           just:"Precio total considerando usuarios y crecimiento.", weight:20},
-      {name:"Escalabilidad",                    just:"Sirve tanto ahora como en 1-2 años de crecimiento.", weight:10},
-      {name:"Integración con herramientas actuales", just:"Compatibilidad con lo que ya usan (Excel, SAP, etc.).", weight:15},
-      {name:"Soporte y documentación",          just:"Disponibilidad de ayuda cuando algo falla.", weight:10},
-      {name:"Seguridad / cumplimiento",         just:"Manejo adecuado de datos sensibles.", weight:5},
+      {name:L("Funcionalidades cubiertas","Features covered"), just:L("Qué tan bien resuelve el caso de uso principal.","How well it solves the main use case."), weight:25},
+      {name:L("Facilidad de uso","Ease of use"), just:L("Curva de aprendizaje para el equipo.","Learning curve for the team."), weight:15},
+      {name:L("Costo / licenciamiento","Cost / licensing"), just:L("Precio total considerando usuarios y crecimiento.","Total price considering users and growth."), weight:20},
+      {name:L("Escalabilidad","Scalability"), just:L("Sirve tanto ahora como en 1-2 años de crecimiento.","Works now and after 1-2 years of growth."), weight:10},
+      {name:L("Integración con herramientas actuales","Integration with current tools"), just:L("Compatibilidad con lo que ya usan (Excel, SAP, etc.).","Compatibility with what you already use (Excel, SAP, etc.)."), weight:15},
+      {name:L("Soporte y documentación","Support and documentation"), just:L("Disponibilidad de ayuda cuando algo falla.","Help available when something breaks."), weight:10},
+      {name:L("Seguridad / cumplimiento","Security / compliance"), just:L("Manejo adecuado de datos sensibles.","Proper handling of sensitive data."), weight:5},
     ],
     ideas: [
-      {name:"Herramienta A", description:"Ej: opción líder del mercado, más costosa.", notes:"", scores:[5,4,2,4,4,4,4]},
-      {name:"Herramienta B", description:"Ej: opción económica, funcionalidad básica.", notes:"", scores:[3,4,5,2,3,2,3]},
-      {name:"Herramienta C", description:"Ej: opción intermedia, buena integración.", notes:"", scores:[4,3,3,3,5,3,3]},
+      {name:L("Herramienta A","Tool A"), description:L("Ej: opción líder del mercado, más costosa.","e.g. market leader, more expensive."), notes:L("",""), scores:[5,4,2,4,4,4,4]},
+      {name:L("Herramienta B","Tool B"), description:L("Ej: opción económica, funcionalidad básica.","e.g. budget option, basic features."), notes:L("",""), scores:[3,4,5,2,3,2,3]},
+      {name:L("Herramienta C","Tool C"), description:L("Ej: opción intermedia, buena integración.","e.g. mid-range option, good integration."), notes:L("",""), scores:[4,3,3,3,5,3,3]},
     ]
   },
   proyectos: {
-    label: "Priorización de proyectos",
+    label: L("Priorización de proyectos", "Project prioritization"),
     criteria: [
-      {name:"Impacto esperado",                 just:"Beneficio que genera si se ejecuta bien.", weight:25},
-      {name:"Facilidad de implementación",      just:"Menor esfuerzo, tiempo y complejidad requeridos (5 = más fácil).", weight:20},
-      {name:"Urgencia",                         just:"Costo de posponerlo o dejarlo para después.", weight:15},
-      {name:"Alineación estratégica",           just:"Qué tan conectado está con los objetivos actuales.", weight:20},
-      {name:"Riesgo",                           just:"Probabilidad de que algo salga mal (5 = menor riesgo).", weight:10},
-      {name:"Recursos disponibles",             just:"Qué tan cubierto está en presupuesto y personas.", weight:10},
+      {name:L("Impacto esperado","Expected impact"), just:L("Beneficio que genera si se ejecuta bien.","Benefit it delivers if executed well."), weight:25},
+      {name:L("Facilidad de implementación","Ease of implementation"), just:L("Menor esfuerzo, tiempo y complejidad requeridos (5 = más fácil).","Less effort, time and complexity required (5 = easiest)."), weight:20},
+      {name:L("Urgencia","Urgency"), just:L("Costo de posponerlo o dejarlo para después.","Cost of postponing it."), weight:15},
+      {name:L("Alineación estratégica","Strategic alignment"), just:L("Qué tan conectado está con los objetivos actuales.","How closely it ties to current goals."), weight:20},
+      {name:L("Riesgo","Risk"), just:L("Probabilidad de que algo salga mal (5 = menor riesgo).","Likelihood that something goes wrong (5 = lowest risk)."), weight:10},
+      {name:L("Recursos disponibles","Available resources"), just:L("Qué tan cubierto está en presupuesto y personas.","How well it is covered in budget and people."), weight:10},
     ],
     ideas: [
-      {name:"Proyecto 1", description:"Ej: alto impacto, requiere más recursos.", notes:"", scores:[5,2,3,4,3,2]},
-      {name:"Proyecto 2", description:"Ej: impacto moderado, rápido de ejecutar.", notes:"", scores:[3,5,4,3,4,4]},
-      {name:"Proyecto 3", description:"Ej: impacto incierto, muy alineado a la estrategia.", notes:"", scores:[3,3,2,5,3,3]},
+      {name:L("Proyecto 1","Project 1"), description:L("Ej: alto impacto, requiere más recursos.","e.g. high impact, needs more resources."), notes:L("",""), scores:[5,2,3,4,3,2]},
+      {name:L("Proyecto 2","Project 2"), description:L("Ej: impacto moderado, rápido de ejecutar.","e.g. moderate impact, quick to execute."), notes:L("",""), scores:[3,5,4,3,4,4]},
+      {name:L("Proyecto 3","Project 3"), description:L("Ej: impacto incierto, muy alineado a la estrategia.","e.g. uncertain impact, closely aligned with strategy."), notes:L("",""), scores:[3,3,2,5,3,3]},
     ]
   },
   vivienda: {
-    label: "Vivienda / inmueble",
+    label: L("Vivienda / inmueble", "Housing / property"),
     criteria: [
-      {name:"Precio",                           just:"Ajuste con el presupuesto disponible.", weight:20},
-      {name:"Ubicación",                        just:"Cercanía a trabajo, familia o zonas de interés.", weight:20},
-      {name:"Tamaño / distribución",            just:"Espacio y funcionalidad para las necesidades actuales.", weight:15},
-      {name:"Estado / necesidad de remodelación", just:"Costo adicional para dejarlo habitable (5 = listo para habitar).", weight:15},
-      {name:"Cercanía a servicios",             just:"Transporte, comercio, salud, educación cerca.", weight:10},
-      {name:"Seguridad de la zona",             just:"Percepción y datos de seguridad del sector.", weight:10},
-      {name:"Potencial de valorización",        just:"Probabilidad de que el inmueble gane valor con el tiempo.", weight:10},
+      {name:L("Precio","Price"), just:L("Ajuste con el presupuesto disponible.","Fit with the available budget."), weight:20},
+      {name:L("Ubicación","Location"), just:L("Cercanía a trabajo, familia o zonas de interés.","Proximity to work, family or areas of interest."), weight:20},
+      {name:L("Tamaño / distribución","Size / layout"), just:L("Espacio y funcionalidad para las necesidades actuales.","Space and functionality for current needs."), weight:15},
+      {name:L("Estado / necesidad de remodelación","Condition / renovation needs"), just:L("Costo adicional para dejarlo habitable (5 = listo para habitar).","Extra cost to make it livable (5 = move-in ready)."), weight:15},
+      {name:L("Cercanía a servicios","Proximity to services"), just:L("Transporte, comercio, salud, educación cerca.","Transport, shops, healthcare and schools nearby."), weight:10},
+      {name:L("Seguridad de la zona","Neighborhood safety"), just:L("Percepción y datos de seguridad del sector.","Perceived safety and safety data for the area."), weight:10},
+      {name:L("Potencial de valorización","Appreciation potential"), just:L("Probabilidad de que el inmueble gane valor con el tiempo.","Likelihood that the property gains value over time."), weight:10},
     ],
     ideas: [
-      {name:"Propiedad 1", description:"Ej: buena ubicación, precio alto.", notes:"", scores:[2,5,3,4,4,4,4]},
-      {name:"Propiedad 2", description:"Ej: precio bajo, necesita remodelación.", notes:"", scores:[5,3,4,2,3,3,3]},
-      {name:"Propiedad 3", description:"Ej: opción balanceada en las afueras.", notes:"", scores:[3,3,4,4,2,4,3]},
+      {name:L("Propiedad 1","Property 1"), description:L("Ej: buena ubicación, precio alto.","e.g. great location, high price."), notes:L("",""), scores:[2,5,3,4,4,4,4]},
+      {name:L("Propiedad 2","Property 2"), description:L("Ej: precio bajo, necesita remodelación.","e.g. low price, needs renovation."), notes:L("",""), scores:[5,3,4,2,3,3,3]},
+      {name:L("Propiedad 3","Property 3"), description:L("Ej: opción balanceada en las afueras.","e.g. balanced option on the outskirts."), notes:L("",""), scores:[3,3,4,4,2,4,3]},
     ]
   },
 };
@@ -968,11 +1288,11 @@ let DEFAULT_IDEAS = [];
 
 function instantiatePreset(key){
   const def = PRESETS[key];
-  const newCriteria = def.criteria.map(c => ({id:newCritId(), name:c.name, just:c.just, weight:c.weight, locked:false}));
-  const newIdeas = def.ideas.map(seed => {
+  const newCriteria = def.criteria.map((c,i) => ({id:newCritId(), name:pt(c.name), just:pt(c.just), weight:c.weight, locked:false, src:{p:key, i}}));
+  const newIdeas = def.ideas.map((seed,j) => {
     const scores = {};
     newCriteria.forEach((c,i) => scores[c.id] = seed.scores[i]);
-    return {id:newIdeaId(), name:seed.name, problem:seed.description, explanation:seed.notes, scores};
+    return {id:newIdeaId(), name:pt(seed.name), problem:pt(seed.description), explanation:pt(seed.notes), scores, src:{p:key, i:j}};
   });
   return {criteria:newCriteria, ideas:newIdeas};
 }
@@ -984,6 +1304,26 @@ function applyPreset(key){
   DEFAULT_CRITERIA = JSON.parse(JSON.stringify(CRITERIA));
   DEFAULT_IDEAS = JSON.parse(JSON.stringify(ideas));
   currentPresetKey = key;
+}
+
+/* Al cambiar de idioma, los textos de ejemplo que el usuario no ha editado pasan al otro idioma;
+   lo que el usuario escribió o modificó se conserva tal cual. */
+function swapPresetTexts(fromLang, toLang){
+  CRITERIA.forEach(c => {
+    if(!c.src || !PRESETS[c.src.p]) return;
+    const d = PRESETS[c.src.p].criteria[c.src.i];
+    if(!d) return;
+    if(c.name === d.name[fromLang]) c.name = d.name[toLang];
+    if(c.just === d.just[fromLang]) c.just = d.just[toLang];
+  });
+  ideas.forEach(idea => {
+    if(!idea.src || !PRESETS[idea.src.p]) return;
+    const d = PRESETS[idea.src.p].ideas[idea.src.i];
+    if(!d) return;
+    if(idea.name === d.name[fromLang]) idea.name = d.name[toLang];
+    if(idea.problem === d.description[fromLang]) idea.problem = d.description[toLang];
+    if(idea.explanation === d.notes[fromLang]) idea.explanation = d.notes[toLang];
+  });
 }
 
 applyPreset(currentPresetKey);
@@ -1004,73 +1344,75 @@ function updateOverviewCards(){
   if(!domainValue) return;
 
   const preset = PRESETS[currentPresetKey];
+  const presetName = preset ? pt(preset.label) : "";
   const domainLabel = document.getElementById("kpiDomainLabel");
   const trimmedProject = projectName.trim();
+  const counts = t("kpi_counts", {c: CRITERIA.length, o: ideas.length});
   if(trimmedProject){
     domainValue.textContent = trimmedProject;
     domainValue.title = trimmedProject;
-    if(domainLabel) domainLabel.textContent = "Proyecto";
-    domainSub.textContent = `${preset ? preset.label : "Ámbito"} · ${CRITERIA.length} criterios · ${ideas.length} opciones`;
+    if(domainLabel) domainLabel.textContent = t("kpi_project");
+    domainSub.textContent = `${preset ? presetName : t("kpi_domain_fallback")} · ${counts}`;
   } else {
-    domainValue.textContent = preset ? preset.label : "—";
-    domainValue.title = preset ? preset.label : "";
-    if(domainLabel) domainLabel.textContent = "Ámbito actual";
-    domainSub.textContent = `${CRITERIA.length} criterios · ${ideas.length} opciones`;
+    domainValue.textContent = preset ? presetName : "—";
+    domainValue.title = preset ? presetName : "";
+    if(domainLabel) domainLabel.textContent = t("kpi_domain");
+    domainSub.textContent = counts;
   }
 
   optionsValue.textContent = ideas.length;
-  optionsSub.textContent = ideas.length === 0 ? "Agréguenlas en la sección 01" : "Cargadas en la matriz";
+  optionsSub.textContent = ideas.length === 0 ? t("kpi_opt_empty") : t("kpi_opt_loaded");
 
   const weightSum = CRITERIA.reduce((a,c)=>a+c.weight,0);
   weightsValue.textContent = weightSum + "%";
-  weightsValue.className = "kpi-value " + (weightSum === 100 ? "accent-teal" : (CRITERIA.length ? "accent-red" : ""));
-  weightsSub.textContent = `${CRITERIA.length} criterios activos`;
+  weightsValue.className = "kpi-value " + (weightSum === 100 ? "accent-mint" : (CRITERIA.length ? "accent-red" : ""));
+  weightsSub.textContent = t("kpi_active_crit", {c: CRITERIA.length});
 
   const locked = weightSum !== 100;
   const totals = ideas.map(idea => weightedTotal(idea.scores));
-  const withNames = ideas.map((idea,i) => ({name: idea.name || "(sin nombre)", total: totals[i]}));
+  const withNames = ideas.map((idea,i) => ({name: idea.name || t("noname"), total: totals[i]}));
   withNames.sort((a,b)=>b.total-a.total);
 
   if(ideas.length === 0){
     leaderValue.textContent = "—";
-    leaderSub.textContent = "Sin opciones aún";
+    leaderSub.textContent = t("kpi_no_options");
     gapValue.textContent = "—";
-    gapSub.textContent = "Qué tan clara es la decisión";
+    gapSub.textContent = t("kpi_gap_default");
   } else if(locked){
     leaderValue.textContent = "—";
-    leaderSub.textContent = "Pesos sin cuadrar a 100%";
+    leaderSub.textContent = t("kpi_unbalanced");
     gapValue.textContent = "—";
-    gapSub.textContent = "Se calcula al desbloquear";
+    gapSub.textContent = t("kpi_gap_locked");
   } else {
     leaderValue.textContent = withNames[0].name;
-    leaderSub.textContent = `Puntaje ${withNames[0].total.toFixed(2)} / 5`;
+    leaderSub.textContent = t("kpi_score", {s: withNames[0].total.toFixed(2)});
     if(withNames.length > 1){
       const gap = withNames[0].total - withNames[1].total;
       gapValue.textContent = gap.toFixed(2);
-      gapSub.textContent = gap < 0.3 ? "Resultado muy reñido — revisen criterios" : "vs. el segundo lugar";
-      gapValue.className = "kpi-value " + (gap < 0.3 ? "accent-red" : "accent-teal");
+      gapSub.textContent = gap < 0.3 ? t("kpi_gap_tight") : t("kpi_gap_vs");
+      gapValue.className = "kpi-value " + (gap < 0.3 ? "accent-red" : "accent-mint");
     } else {
       gapValue.textContent = "—";
-      gapSub.textContent = "Agreguen otra opción para comparar";
+      gapSub.textContent = t("kpi_gap_add");
     }
   }
 
   if(CRITERIA.length === 0){
-    statusValue.textContent = "Sin criterios";
-    statusSub.textContent = "Agreguen criterios en la sección 02";
+    statusValue.textContent = t("st_nocrit");
+    statusSub.textContent = t("st_nocrit_sub");
     statusValue.className = "kpi-value accent-red";
   } else if(ideas.length === 0){
-    statusValue.textContent = "Sin opciones";
-    statusSub.textContent = "Agreguen opciones en la sección 01";
+    statusValue.textContent = t("st_noopt");
+    statusSub.textContent = t("st_noopt_sub");
     statusValue.className = "kpi-value accent-red";
   } else if(locked){
-    statusValue.textContent = "Bloqueada";
-    statusSub.textContent = "Los pesos no suman 100%";
+    statusValue.textContent = t("st_locked");
+    statusSub.textContent = t("st_locked_sub");
     statusValue.className = "kpi-value accent-red";
   } else {
-    statusValue.textContent = "Lista";
-    statusSub.textContent = "Pueden calificar y decidir";
-    statusValue.className = "kpi-value accent-teal";
+    statusValue.textContent = t("st_ready");
+    statusSub.textContent = t("st_ready_sub");
+    statusValue.className = "kpi-value accent-mint";
   }
 }
 
@@ -1079,19 +1421,19 @@ function updateConclusions(){
   if(!card) return;
 
   if(CRITERIA.length === 0 || ideas.length === 0){
-    card.innerHTML = `<div class="empty-state">Agreguen opciones y criterios para ver las conclusiones aquí.</div>`;
+    card.innerHTML = `<div class="empty-state">${t("c_empty")}</div>`;
     return;
   }
   const weightSum = CRITERIA.reduce((a,c)=>a+c.weight,0);
   if(weightSum !== 100){
-    card.innerHTML = `<div class="empty-state">Cuadren los pesos a 100% en la sección 02 para generar las conclusiones.</div>`;
+    card.innerHTML = `<div class="empty-state">${t("c_unbalanced")}</div>`;
     return;
   }
 
   const rows = getSortedResults();
   const leader = rows[0];
   const second = rows[1];
-  const presetLabel = (PRESETS[currentPresetKey] && PRESETS[currentPresetKey].label) || "este ámbito";
+  const presetLabel = (PRESETS[currentPresetKey] && pt(PRESETS[currentPresetKey].label)) || t("c_this_domain");
 
   let strongest = null, weakest = null;
   CRITERIA.forEach(c => {
@@ -1101,30 +1443,30 @@ function updateConclusions(){
   });
 
   let items = "";
-  items += `<li><span class="bullet-icon good">✓</span><span>Se evaluaron <strong>${ideas.length} opciones</strong> bajo <strong>${CRITERIA.length} criterios</strong> en el ámbito de <strong>${escapeHtml(presetLabel)}</strong>.</span></li>`;
+  items += `<li><span class="bullet-icon good">✓</span><span>${t("c_evaluated", {o: ideas.length, c: CRITERIA.length, d: escapeHtml(presetLabel)})}</span></li>`;
 
   if(second){
     const gap = leader.total - second.total;
     if(gap < 0.3){
-      items += `<li><span class="bullet-icon warn">!</span><span>El margen con <strong>${escapeHtml(second.idea.name)}</strong> es de apenas <strong>${gap.toFixed(2)} puntos</strong> — un resultado muy reñido. Antes de decidir, revisen si los pesos reflejan bien sus prioridades reales.</span></li>`;
+      items += `<li><span class="bullet-icon warn">!</span><span>${t("c_tight", {n: escapeHtml(second.idea.name), g: gap.toFixed(2)})}</span></li>`;
     } else {
-      items += `<li><span class="bullet-icon good">✓</span><span><strong>${escapeHtml(leader.idea.name)}</strong> supera a <strong>${escapeHtml(second.idea.name)}</strong> por <strong>${gap.toFixed(2)} puntos</strong> — una diferencia clara que respalda la decisión.</span></li>`;
+      items += `<li><span class="bullet-icon good">✓</span><span>${t("c_clear", {l: escapeHtml(leader.idea.name), n: escapeHtml(second.idea.name), g: gap.toFixed(2)})}</span></li>`;
     }
   } else {
-    items += `<li><span class="bullet-icon">•</span><span>Agreguen al menos una segunda opción para poder comparar el margen de la decisión.</span></li>`;
+    items += `<li><span class="bullet-icon">•</span><span>${t("c_add_second")}</span></li>`;
   }
 
-  items += `<li><span class="bullet-icon good">✓</span><span>Su punto más fuerte es <strong>${escapeHtml(strongest.name)}</strong>, con calificación ${strongest.score}/5.</span></li>`;
+  items += `<li><span class="bullet-icon good">✓</span><span>${t("c_strongest", {n: escapeHtml(strongest.name), s: strongest.score})}</span></li>`;
 
   if(weakest.score <= 2){
-    items += `<li><span class="bullet-icon warn">!</span><span>Su punto más débil es <strong>${escapeHtml(weakest.name)}</strong>, con calificación ${weakest.score}/5 — vale la pena confirmar que este riesgo sea asumible antes de avanzar.</span></li>`;
+    items += `<li><span class="bullet-icon warn">!</span><span>${t("c_weak_crit", {n: escapeHtml(weakest.name), s: weakest.score})}</span></li>`;
   } else {
-    items += `<li><span class="bullet-icon">•</span><span>Su punto relativamente más débil es <strong>${escapeHtml(weakest.name)}</strong>, con calificación ${weakest.score}/5 — sin ser crítico.</span></li>`;
+    items += `<li><span class="bullet-icon">•</span><span>${t("c_weak_mild", {n: escapeHtml(weakest.name), s: weakest.score})}</span></li>`;
   }
 
   card.innerHTML = `
     <div class="conclusions-headline">
-      Mejor opción: <span class="cname">${escapeHtml(leader.idea.name || "(sin nombre)")}</span>
+      ${t("c_best")} <span class="cname">${escapeHtml(leader.idea.name || t("noname"))}</span>
       <span class="cscore">${leader.total.toFixed(2)} / 5</span>
     </div>
     <ul class="conclusions-list">${items}</ul>
@@ -1162,15 +1504,15 @@ function redistributeUnlocked(){
   unlocked.forEach((c, i) => { c.weight = shares[i]; });
 }
 
-/* ---------------- Weights: structural render ---------------- */
 function paintSliderTrack(slider){
   const min = parseFloat(slider.min) || 0;
   const max = parseFloat(slider.max) || 100;
   const val = parseFloat(slider.value) || 0;
   const pct = ((val - min) / (max - min)) * 100;
-  slider.style.background = `linear-gradient(to right, var(--amber-fill) 0%, var(--amber-fill) ${pct}%, var(--line) ${pct}%, var(--line) 100%)`;
+  slider.style.background = `linear-gradient(to right, var(--orange-fill) 0%, var(--orange-fill) ${pct}%, var(--line) ${pct}%, var(--line) 100%)`;
 }
 
+/* ---------------- Weights: structural render ---------------- */
 function renderWeightsStructure(){
   const list = document.getElementById("weightsList");
   list.innerHTML = "";
@@ -1179,20 +1521,20 @@ function renderWeightsStructure(){
     row.className = "weight-row" + (c.locked ? " locked-row" : "");
     row.innerHTML = `
       <div>
-        <input type="text" class="critNameInput" data-id="${c.id}" value="${escapeAttr(c.name)}" placeholder="Ej: Precio, calidad, tiempo de entrega…">
+        <input type="text" class="critNameInput" data-id="${c.id}" value="${escapeAttr(c.name)}" placeholder="${escapeAttr(t("crit_name_ph"))}" aria-label="${escapeAttr(t("x_criterion"))}">
       </div>
       <div>
-        <input type="text" class="just-input critJustInput" data-id="${c.id}" value="${escapeAttr(c.just)}" placeholder="Ej: por qué es importante este criterio para la decisión">
+        <input type="text" class="just-input critJustInput" data-id="${c.id}" value="${escapeAttr(c.just)}" placeholder="${escapeAttr(t("crit_just_ph"))}" aria-label="${escapeAttr(t("x_just"))}">
       </div>
       <div class="w-slider-cell">
-        <input type="range" min="0" max="100" step="5" value="${c.weight}" data-id="${c.id}" class="weightSlider" id="wslider-${c.id}">
+        <input type="range" min="0" max="100" step="5" value="${c.weight}" data-id="${c.id}" class="weightSlider" id="wslider-${c.id}" aria-label="${escapeAttr(t("x_weight"))}">
       </div>
       <div class="w-pct-input-wrap">
-        <input type="number" min="0" max="100" step="5" class="w-pct-input" id="wnum-${c.id}" data-id="${c.id}" value="${c.weight}">
+        <input type="number" min="0" max="100" step="5" class="w-pct-input" id="wnum-${c.id}" data-id="${c.id}" value="${c.weight}" aria-label="${escapeAttr(t("x_weight"))}">
         <span class="w-pct-suffix">%</span>
       </div>
-      <button class="lock-btn ${c.locked ? 'locked' : ''}" data-id="${c.id}" title="${c.locked ? 'Desbloquear peso' : 'Bloquear peso'}">${c.locked ? '🔒' : '🔓'}</button>
-      <button class="del-btn" data-id="${c.id}" title="Eliminar criterio">✕</button>
+      <button class="lock-btn ${c.locked ? 'locked' : ''}" data-id="${c.id}" title="${escapeAttr(c.locked ? t("lock_on") : t("lock_off"))}">${c.locked ? '🔒' : '🔓'}</button>
+      <button class="del-btn" data-id="${c.id}" title="${escapeAttr(t("del_crit"))}">✕</button>
     `;
     list.appendChild(row);
   });
@@ -1238,7 +1580,7 @@ function renderWeightsStructure(){
       const id = e.target.dataset.id;
       CRITERIA.find(c => c.id === id).name = e.target.value;
       const hdr = document.getElementById("hdrname-" + id);
-      if(hdr) hdr.textContent = e.target.value || "(sin nombre)";
+      if(hdr) hdr.textContent = e.target.value || t("noname");
     });
   });
 
@@ -1296,7 +1638,7 @@ function renderIdeaCardsStructure(){
   const list = document.getElementById("ideaCardsList");
   list.innerHTML = "";
   if(ideas.length === 0){
-    list.innerHTML = `<div class="empty-state">Aún no hay opciones. Agreguen la primera con el formulario de arriba.</div>`;
+    list.innerHTML = `<div class="empty-state">${t("cards_empty")}</div>`;
     return;
   }
   ideas.forEach((idea, idx) => {
@@ -1305,18 +1647,18 @@ function renderIdeaCardsStructure(){
     card.innerHTML = `
       <div class="idea-num">${idx + 1}</div>
       <div class="field name-field">
-        <label>Nombre corto</label>
-        <input type="text" class="cardNameInput" data-id="${idea.id}" value="${escapeAttr(idea.name)}">
+        <label>${t("f_name")}</label>
+        <input type="text" class="cardNameInput" data-id="${idea.id}" value="${escapeAttr(idea.name)}" aria-label="${escapeAttr(t("f_name"))}">
       </div>
       <div class="field">
-        <label>Problemática</label>
-        <textarea class="cardProblemInput" data-id="${idea.id}">${idea.problem}</textarea>
+        <label>${t("f_desc")}</label>
+        <textarea class="cardProblemInput" data-id="${idea.id}" aria-label="${escapeAttr(t("f_desc"))}">${escapeHtml(idea.problem)}</textarea>
       </div>
       <div class="field">
-        <label>Explicación</label>
-        <textarea class="cardExplanationInput" data-id="${idea.id}">${idea.explanation}</textarea>
+        <label>${t("card_notes")}</label>
+        <textarea class="cardExplanationInput" data-id="${idea.id}" aria-label="${escapeAttr(t("card_notes"))}">${escapeHtml(idea.explanation)}</textarea>
       </div>
-      <button class="del-btn" data-id="${idea.id}" title="Eliminar opción">✕</button>
+      <button class="del-btn" data-id="${idea.id}" title="${escapeAttr(t("del_option"))}">✕</button>
     `;
     list.appendChild(card);
   });
@@ -1326,7 +1668,7 @@ function renderIdeaCardsStructure(){
       const id = e.target.dataset.id;
       ideas.find(i => i.id === id).name = e.target.value;
       const cell = document.getElementById("matrixname-" + id);
-      if(cell) cell.textContent = e.target.value || "(sin nombre)";
+      if(cell) cell.textContent = e.target.value || t("noname");
       renderLeaderboard();
     });
   });
@@ -1358,7 +1700,7 @@ function updateIdeaTooltip(id){
   const icon = document.getElementById("info-" + id);
   if(!icon) return;
   const idea = ideas.find(i => i.id === id);
-  icon.title = "Descripción: " + idea.problem + "\nNotas: " + idea.explanation;
+  icon.title = t("tip_desc") + idea.problem + "\n" + t("tip_notes") + idea.explanation;
 }
 
 document.getElementById("addIdeaBtn").addEventListener("click", () => {
@@ -1380,7 +1722,7 @@ function renderMatrixStructure(){
   const wrap = document.getElementById("matrixTableWrap");
   const lockNote = document.getElementById("scoringLockNote");
   if(ideas.length === 0){
-    wrap.innerHTML = `<div class="empty-state">Agreguen al menos una opción en la sección 01 para calificarla aquí.</div>`;
+    wrap.innerHTML = `<div class="empty-state">${t("m_empty_opt")}</div>`;
     if(lockNote) lockNote.style.display = "none";
     renderLeaderboard();
     updateOverviewCards();
@@ -1388,7 +1730,7 @@ function renderMatrixStructure(){
     return;
   }
   if(CRITERIA.length === 0){
-    wrap.innerHTML = `<div class="empty-state">Agreguen al menos un criterio en la sección 02 para calificar opciones.</div>`;
+    wrap.innerHTML = `<div class="empty-state">${t("m_empty_crit")}</div>`;
     if(lockNote) lockNote.style.display = "none";
     renderLeaderboard();
     updateOverviewCards();
@@ -1396,11 +1738,11 @@ function renderMatrixStructure(){
     return;
   }
 
-  let head = `<tr><th class="idea-col">Opción</th>`;
+  let head = `<tr><th class="idea-col">${t("m_option")}</th>`;
   CRITERIA.forEach(c => {
-    head += `<th><span id="hdrname-${c.id}">${escapeHtml(c.name || "(sin nombre)")}</span><span class="crit-weight" id="hdrweight-${c.id}">${c.weight}%</span></th>`;
+    head += `<th><span id="hdrname-${c.id}">${escapeHtml(c.name || t("noname"))}</span><span class="crit-weight" id="hdrweight-${c.id}">${c.weight}%</span></th>`;
   });
-  head += `<th>Total</th><th>#</th></tr>`;
+  head += `<th>${t("m_total")}</th><th>#</th></tr>`;
 
   let body = "";
   ideas.forEach((idea, idx) => {
@@ -1408,13 +1750,13 @@ function renderMatrixStructure(){
       <td class="idea-name-cell">
         <span class="name-wrap">
           <span class="matrix-num">${idx + 1}</span>
-          <span id="matrixname-${idea.id}">${escapeHtml(idea.name || "(sin nombre)")}</span>
+          <span id="matrixname-${idea.id}">${escapeHtml(idea.name || t("noname"))}</span>
           <span class="info-icon" id="info-${idea.id}" title="">i</span>
         </span>
       </td>`;
     CRITERIA.forEach(c => {
       const val = idea.scores[c.id] !== undefined ? idea.scores[c.id] : 3;
-      body += `<td><input type="number" min="1" max="5" step="1" value="${val}" class="score-input" data-idea="${idea.id}" data-crit="${c.id}"></td>`;
+      body += `<td><input type="number" min="1" max="5" step="1" value="${val}" class="score-input" data-idea="${idea.id}" data-crit="${c.id}" aria-label="${escapeAttr((idea.name || t("noname")) + " · " + (c.name || t("noname")))}"></td>`;
     });
     body += `<td class="total-cell" id="total-${idea.id}">0.00</td>`;
     body += `<td class="rank-cell" id="rank-${idea.id}">—</td>`;
@@ -1466,7 +1808,7 @@ function renderLeaderboard(){
   const lb = document.getElementById("leaderboard");
   lb.innerHTML = "";
   if(ideas.length === 0){
-    lb.innerHTML = `<div class="empty-state">El ranking aparecerá aquí en cuanto agreguen opciones.</div>`;
+    lb.innerHTML = `<div class="empty-state">${t("lb_empty")}</div>`;
     return;
   }
   const withTotals = ideas.map(idea => ({name: idea.name, total: weightedTotal(idea.scores)}));
@@ -1480,7 +1822,7 @@ function renderLeaderboard(){
     row.innerHTML = `
       <div class="lb-rank ${i===0?'first':''}">${i+1}</div>
       <div class="lb-main">
-        <div class="lb-name ${i===0?'first':''}">${escapeHtml(item.name || "(sin nombre)")}</div>
+        <div class="lb-name ${i===0?'first':''}">${escapeHtml(item.name || t("noname"))}</div>
         <div class="lb-track">
           <div class="lb-fill ${i===0?'first':''}" style="width:${pct}%"></div>
         </div>
@@ -1494,9 +1836,7 @@ function renderLeaderboard(){
 /* ---------------- Reset ---------------- */
 document.getElementById("resetBtn").addEventListener("click", () => {
   if(ideas.length === 0 || CRITERIA.length === 0) return;
-  const confirmed = window.confirm(
-    "Esto reiniciará todas las calificaciones (1-5) de la matriz a un valor neutral. Los criterios, pesos y opciones no se modifican. ¿Continuar?"
-  );
+  const confirmed = window.confirm(t("confirm_reset"));
   if(!confirmed) return;
   ideas.forEach(idea => {
     CRITERIA.forEach(c => { idea.scores[c.id] = 3; });
@@ -1540,7 +1880,7 @@ function populateDomainSelect(){
   Object.keys(PRESETS).forEach(key => {
     const opt = document.createElement("option");
     opt.value = key;
-    opt.textContent = PRESETS[key].label;
+    opt.textContent = pt(PRESETS[key].label);
     select.appendChild(opt);
   });
   select.value = currentPresetKey;
@@ -1552,18 +1892,16 @@ function updateDomainHint(){
   const def = PRESETS[currentPresetKey];
   if(!hint || !def) return;
   if(def.criteria.length === 0 && def.ideas.length === 0){
-    hint.textContent = "Sin ejemplos precargados — agreguen todo desde cero.";
+    hint.textContent = t("hint_blank");
   } else {
-    hint.textContent = `${def.criteria.length} criterios y ${def.ideas.length} opciones de ejemplo, editables.`;
+    hint.textContent = t("hint_counts", {c: def.criteria.length, o: def.ideas.length});
   }
 }
 
 document.getElementById("domainSelect").addEventListener("change", e => {
   const newKey = e.target.value;
   if(newKey === currentPresetKey) return;
-  const confirmed = window.confirm(
-    "Cambiar de ámbito reemplazará las opciones y criterios actuales por los del nuevo ámbito. Esta acción no se puede deshacer. ¿Continuar?"
-  );
+  const confirmed = window.confirm(t("confirm_domain"));
   if(!confirmed){
     e.target.value = currentPresetKey;
     return;
@@ -1582,7 +1920,6 @@ populateDomainSelect();
   const overlay = document.getElementById("helpModalOverlay");
   const openBtn = document.getElementById("helpBtn");
   const closeBtn = document.getElementById("helpModalClose");
-  const panel = document.getElementById("helpModalPanel");
 
   function openModal(){
     overlay.classList.add("open");
@@ -1621,10 +1958,10 @@ function showToast(message, type){
 function validateExport(){
   const weightSum = CRITERIA.reduce((a,c)=>a+c.weight,0);
   if(CRITERIA.length === 0 || ideas.length === 0){
-    return "Agreguen al menos un criterio y una opción antes de exportar.";
+    return t("exp_need_items");
   }
   if(weightSum !== 100){
-    return "Los pesos deben sumar 100% antes de exportar.";
+    return t("exp_need_100");
   }
   return null;
 }
@@ -1635,7 +1972,7 @@ function loadScriptOnce(src, globalCheck){
     const script = document.createElement("script");
     script.src = src;
     script.onload = () => resolve();
-    script.onerror = () => reject(new Error("No se pudo cargar la librería de exportación. Verifiquen su conexión a internet."));
+    script.onerror = () => reject(new Error(t("exp_lib_error")));
     document.head.appendChild(script);
   });
 }
@@ -1647,14 +1984,16 @@ function getSortedResults(){
   return rows;
 }
 
+const dateLocale = () => LANG === "en" ? "en-US" : "es-CO";
+
 /* ---------------- Export: PNG ---------------- */
 function buildExportTemplate(){
   const el = document.getElementById("exportTemplate");
   const weightSum = CRITERIA.reduce((a,c)=>a+c.weight,0);
   const rows = getSortedResults();
-  const presetLabel = (PRESETS[currentPresetKey] && PRESETS[currentPresetKey].label) || "Ámbito personalizado";
+  const presetLabel = (PRESETS[currentPresetKey] && pt(PRESETS[currentPresetKey].label)) || t("exp_custom");
   const titleLabel = projectName.trim() || presetLabel;
-  const today = new Date().toLocaleDateString("es-CO", {year:"numeric", month:"long", day:"numeric"});
+  const today = new Date().toLocaleDateString(dateLocale(), {year:"numeric", month:"long", day:"numeric"});
 
   let critHeaders = "";
   CRITERIA.forEach(c => {
@@ -1671,46 +2010,46 @@ function buildExportTemplate(){
     });
     const bg = i === 0 ? "background:#EAF6EF;" : (i % 2 === 0 ? "background:#FFFFFF;" : "background:#F7F8F9;");
     bodyRows += `<tr style="${bg}">
-      <td style="padding:9px 12px;border-bottom:1px solid #E2E4E8;font-weight:700;font-size:13px;">${i+1}. ${escapeHtml(r.idea.name || "(sin nombre)")}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #E2E4E8;font-weight:700;font-size:13px;">${i+1}. ${escapeHtml(r.idea.name || t("noname"))}</td>
       ${cells}
       <td style="text-align:center;padding:9px 12px;border-bottom:1px solid #E2E4E8;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;color:${i===0 ? '#1B7A50' : '#111318'};">${r.total.toFixed(2)}</td>
     </tr>`;
   });
 
   el.innerHTML = `
-    <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#A5650C;font-weight:700;margin-bottom:6px;">Matriz de ponderación</div>
-    <div style="font-size:22px;font-weight:800;margin-bottom:4px;">Resultado — ${escapeHtml(titleLabel)}</div>
-    <div style="font-size:13px;color:#5B6270;margin-bottom:20px;">Suma de pesos: ${weightSum}% · Escala de calificación 1 a 5 · ${rows.length} opciones evaluadas</div>
+    <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#A5650C;font-weight:700;margin-bottom:6px;">${t("exp_brand")}</div>
+    <div style="font-size:22px;font-weight:800;margin-bottom:4px;">${t("exp_result", {t: escapeHtml(titleLabel)})}</div>
+    <div style="font-size:13px;color:#5B6270;margin-bottom:20px;">${t("exp_meta", {w: weightSum, n: rows.length})}</div>
     <table style="border-collapse:collapse;width:100%;">
       <thead>
         <tr style="background:#F0F1F3;">
-          <th style="text-align:left;padding:10px 12px;border-bottom:2px solid #111318;font-size:12px;">Opción</th>
+          <th style="text-align:left;padding:10px 12px;border-bottom:2px solid #111318;font-size:12px;">${t("m_option")}</th>
           ${critHeaders}
-          <th style="text-align:center;padding:10px 12px;border-bottom:2px solid #111318;font-size:12px;">Puntaje<br>ponderado</th>
+          <th style="text-align:center;padding:10px 12px;border-bottom:2px solid #111318;font-size:12px;">${t("exp_weighted")}</th>
         </tr>
       </thead>
       <tbody>${bodyRows}</tbody>
     </table>
-    <div style="margin-top:16px;font-size:11px;color:#8B93A1;">Fuente: generado con Matriz de ponderación · ${today} · Cada celda es el puntaje (1-5) multiplicado por el peso del criterio.</div>
+    <div style="margin-top:16px;font-size:11px;color:#8B93A1;">${t("exp_source", {d: today})}</div>
   `;
 }
 
 async function exportPNG(){
   const err = validateExport();
   if(err){ showToast(err, "error"); return; }
-  showToast("Generando imagen…");
+  showToast(t("exp_png_busy"));
   try{
     await loadScriptOnce("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js", () => !!window.html2canvas);
     buildExportTemplate();
     const el = document.getElementById("exportTemplate");
     const canvas = await window.html2canvas(el, {backgroundColor: "#FFFFFF", scale: 2});
     const link = document.createElement("a");
-    link.download = "matriz-de-ponderacion.png";
+    link.download = t("exp_file") + ".png";
     link.href = canvas.toDataURL("image/png");
     link.click();
-    showToast("Imagen descargada.", "success");
+    showToast(t("exp_png_ok"), "success");
   } catch(e){
-    showToast(e.message || "No se pudo generar la imagen.", "error");
+    showToast(e.message || t("exp_png_fail"), "error");
   }
 }
 
@@ -1718,24 +2057,24 @@ async function exportPNG(){
 async function exportExcel(){
   const err = validateExport();
   if(err){ showToast(err, "error"); return; }
-  showToast("Generando archivo Excel…");
+  showToast(t("exp_xlsx_busy"));
   try{
     await loadScriptOnce("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js", () => !!window.XLSX);
     const rows = getSortedResults();
-    const presetLabel = (PRESETS[currentPresetKey] && PRESETS[currentPresetKey].label) || "Ámbito personalizado";
+    const presetLabel = (PRESETS[currentPresetKey] && pt(PRESETS[currentPresetKey].label)) || t("exp_custom");
     const titleLabel = projectName.trim() || presetLabel;
 
-    const header = ["#", "Opción", ...CRITERIA.map(c => `${c.name} (${c.weight}%)`), "Puntaje ponderado", "Ranking"];
+    const header = ["#", t("m_option"), ...CRITERIA.map(c => `${c.name} (${c.weight}%)`), t("x_weighted"), t("x_rank")];
     const dataRows = rows.map((r, i) => {
       const cells = CRITERIA.map(c => {
         const score = r.idea.scores[c.id] !== undefined ? r.idea.scores[c.id] : 0;
         return Number((score * (c.weight/100)).toFixed(2));
       });
-      return [i+1, r.idea.name || "(sin nombre)", ...cells, Number(r.total.toFixed(2)), i+1];
+      return [i+1, r.idea.name || t("noname"), ...cells, Number(r.total.toFixed(2)), i+1];
     });
     const rankingSheetData = [
-      [`Matriz de ponderación — ${titleLabel}`],
-      [`Generado el ${new Date().toLocaleDateString("es-CO")} · Escala de calificación 1 a 5 · cada columna de criterio muestra el puntaje × su peso`],
+      [t("x_title", {t: titleLabel})],
+      [t("x_generated", {d: new Date().toLocaleDateString(dateLocale())})],
       [],
       header,
       ...dataRows
@@ -1743,24 +2082,24 @@ async function exportExcel(){
     const wsRanking = XLSX.utils.aoa_to_sheet(rankingSheetData);
     wsRanking["!cols"] = [{wch:4},{wch:32}, ...CRITERIA.map(()=>({wch:16})), {wch:16},{wch:10}];
 
-    const critHeader = ["Criterio", "Peso (%)", "Justificación"];
+    const critHeader = [t("x_criterion"), t("x_weight"), t("x_just")];
     const critRows = CRITERIA.map(c => [c.name, c.weight, c.just || ""]);
     const wsCriteria = XLSX.utils.aoa_to_sheet([critHeader, ...critRows]);
     wsCriteria["!cols"] = [{wch:32},{wch:10},{wch:60}];
 
-    const detailHeader = ["Opción", "Descripción", "Notas"];
-    const detailRows = ideas.map(idea => [idea.name || "(sin nombre)", idea.problem || "", idea.explanation || ""]);
+    const detailHeader = [t("m_option"), t("x_desc"), t("x_notes")];
+    const detailRows = ideas.map(idea => [idea.name || t("noname"), idea.problem || "", idea.explanation || ""]);
     const wsDetail = XLSX.utils.aoa_to_sheet([detailHeader, ...detailRows]);
     wsDetail["!cols"] = [{wch:32},{wch:50},{wch:50}];
 
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, wsRanking, "Ranking");
-    XLSX.utils.book_append_sheet(wb, wsCriteria, "Criterios");
-    XLSX.utils.book_append_sheet(wb, wsDetail, "Detalle de opciones");
-    XLSX.writeFile(wb, "matriz-de-ponderacion.xlsx");
-    showToast("Excel descargado.", "success");
+    XLSX.utils.book_append_sheet(wb, wsRanking, t("x_sheet_rank"));
+    XLSX.utils.book_append_sheet(wb, wsCriteria, t("x_sheet_crit"));
+    XLSX.utils.book_append_sheet(wb, wsDetail, t("x_sheet_detail"));
+    XLSX.writeFile(wb, t("exp_file") + ".xlsx");
+    showToast(t("exp_xlsx_ok"), "success");
   } catch(e){
-    showToast(e.message || "No se pudo generar el Excel.", "error");
+    showToast(e.message || t("exp_xlsx_fail"), "error");
   }
 }
 
@@ -1792,20 +2131,72 @@ function closeDownloadMenu(){
   });
 })();
 
-/* ---------------- Theme toggle ---------------- */
-(function(){
-  const btn = document.getElementById("themeToggle");
-  if(!btn) return;
-  btn.addEventListener("click", () => {
-    const isDark = document.body.classList.toggle("theme-dark");
-    btn.textContent = isDark ? "☀" : "🌙";
-    btn.title = isDark ? "Cambiar a modo día" : "Cambiar a modo noche";
-  });
-})();
+/* ---------------- Theme toggle (persistente) ---------------- */
+const themeBtn = document.getElementById("themeToggle");
+function applyTheme(dark){
+  document.body.classList.toggle("theme-dark", dark);
+  themeBtn.textContent = dark ? "☀" : "🌙";
+  themeBtn.title = dark ? t("theme_to_light") : t("theme_to_dark");
+}
+themeBtn.addEventListener("click", () => {
+  const dark = !document.body.classList.contains("theme-dark");
+  applyTheme(dark);
+  store.set("jdc-theme", dark ? "dark" : "light");
+});
 
+/* ---------------- Aplicar idioma (estático + dinámico) ---------------- */
+function applyStaticTexts(){
+  document.documentElement.lang = LANG;
+  document.title = t("doc_title");
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.getAttribute("data-i18n")); });
+  document.querySelectorAll("[data-i18n-html]").forEach(el => { el.innerHTML = t(el.getAttribute("data-i18n-html")); });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => { el.setAttribute("placeholder", t(el.getAttribute("data-i18n-ph"))); });
+  document.querySelectorAll("[data-i18n-title]").forEach(el => { el.setAttribute("title", t(el.getAttribute("data-i18n-title"))); });
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => { el.setAttribute("aria-label", t(el.getAttribute("data-i18n-aria"))); });
+  document.querySelectorAll("#langToggle button").forEach(b => {
+    b.classList.toggle("active", b.dataset.lang === LANG);
+    b.setAttribute("aria-pressed", b.dataset.lang === LANG ? "true" : "false");
+  });
+  themeBtn.title = document.body.classList.contains("theme-dark") ? t("theme_to_light") : t("theme_to_dark");
+}
+
+function applyLanguage(lang){
+  const prev = LANG;
+  LANG = lang === "en" ? "en" : "es";
+  if(prev !== LANG) swapPresetTexts(prev, LANG);
+  applyStaticTexts();
+  populateDomainSelect();
+  renderWeightsStructure();
+  renderIdeaCardsStructure();
+  renderMatrixStructure();
+}
+document.getElementById("langToggle").addEventListener("click", e => {
+  const b = e.target.closest("button[data-lang]");
+  if(!b || b.dataset.lang === LANG) return;
+  applyLanguage(b.dataset.lang);
+  store.set("jdc-lang", LANG);
+});
+
+/* ---------------- Arranque ---------------- */
+applyTheme(store.get("jdc-theme") !== "light");
+applyStaticTexts();
 renderWeightsStructure();
 renderIdeaCardsStructure();
 renderMatrixStructure();
+
+/* ---------------- Barra de progreso de scroll ---------------- */
+(function(){
+  const bar = document.getElementById("scrollProgress");
+  if(!bar) return;
+  const upd = () => {
+    const h = document.documentElement;
+    const s = h.scrollHeight - h.clientHeight;
+    bar.style.width = (s > 0 ? (h.scrollTop / s) * 100 : 0) + "%";
+  };
+  window.addEventListener("scroll", upd, { passive:true });
+  window.addEventListener("resize", upd);
+  upd();
+})();
 
 /* ---------------- Cursor halo (mismo estilo que el portafolio) ---------------- */
 (function(){
@@ -1822,70 +2213,72 @@ renderMatrixStructure();
   },{passive:true});
 })();
 
-/* ---------------- i18n ES/EN ---------------- */
-const I18N = {
-  es:{
-    brand:"Matriz de ponderación",
-    nav_domain:"Ámbito", nav_options:"01 Opciones", nav_criteria:"02 Criterios",
-    nav_matrix:"03 Matriz", nav_ranking:"04 Ranking", nav_conclusions:"05 Conclusiones",
-    btn_download:"Descargar", dl_png:"Imagen (PNG)", dl_xlsx:"Excel (.xlsx)",
-    s0_num:"Configuración inicial", s0_title:"Elige el ámbito de la matriz",
-    s0_note:"Cada ámbito trae criterios y opciones de ejemplo, editables. Al cambiar de ámbito se reemplaza todo lo que hay actualmente — se les pedirá confirmación.",
-    s1_num:"01 — Opciones", s1_title:"Agreguen las opciones a evaluar",
-    s1_note:"Nombre corto, descripción y notas adicionales. Cada opción que agreguen aparece automáticamente en la matriz de calificación más abajo.",
-    s2_num:"02 — Criterios", s2_title:"Criterios y pesos",
-    s2_note:"Editen el nombre, la justificación y el peso de cada criterio, o agreguen/eliminen criterios propios.",
-    w_sum:"Suma de pesos",
-    s3_num:"03 — Calificación", s3_title:"Matriz de calificación",
-    s3_note:"1 = muy débil · 2 = débil · 3 = neutral · 4 = fuerte · 5 = muy fuerte",
-    s4_num:"04 — Resultado", s4_title:"Ranking en vivo",
-    s4_note:"Ordenado de mayor a menor puntaje ponderado. Si el orden contradice fuertemente su criterio, revisen los pesos antes de decidir.",
-    s5_num:"05 — Lectura", s5_title:"Conclusiones",
-    s5_note:"Generadas automáticamente a partir del resultado actual. Se actualizan solas cada vez que cambian pesos o calificaciones.",
-    btn_addcrit:"+ Agregar criterio", btn_addopt:"+ Agregar opción",
-    btn_reset:"Reiniciar calificaciones de la matriz",
-    btn_png:"Descargar como imagen (PNG)", btn_xlsx:"Descargar como Excel (.xlsx)"
-  },
-  en:{
-    brand:"Weighted decision matrix",
-    nav_domain:"Scope", nav_options:"01 Options", nav_criteria:"02 Criteria",
-    nav_matrix:"03 Matrix", nav_ranking:"04 Ranking", nav_conclusions:"05 Conclusions",
-    btn_download:"Download", dl_png:"Image (PNG)", dl_xlsx:"Excel (.xlsx)",
-    s0_num:"Initial setup", s0_title:"Choose the matrix scope",
-    s0_note:"Each scope comes with editable sample criteria and options. Switching scope replaces everything currently loaded — you'll be asked to confirm.",
-    s1_num:"01 — Options", s1_title:"Add the options to evaluate",
-    s1_note:"Short name, description and additional notes. Every option you add appears automatically in the scoring matrix below.",
-    s2_num:"02 — Criteria", s2_title:"Criteria and weights",
-    s2_note:"Edit the name, rationale and weight of each criterion, or add and remove your own criteria.",
-    w_sum:"Sum of weights",
-    s3_num:"03 — Scoring", s3_title:"Scoring matrix",
-    s3_note:"1 = very weak · 2 = weak · 3 = neutral · 4 = strong · 5 = very strong",
-    s4_num:"04 — Result", s4_title:"Live ranking",
-    s4_note:"Sorted from highest to lowest weighted score. If the order strongly contradicts your judgement, review the weights before deciding.",
-    s5_num:"05 — Reading", s5_title:"Conclusions",
-    s5_note:"Generated automatically from the current result. They update on their own whenever weights or scores change.",
-    btn_addcrit:"+ Add criterion", btn_addopt:"+ Add option",
-    btn_reset:"Reset matrix scores",
-    btn_png:"Download as image (PNG)", btn_xlsx:"Download as Excel (.xlsx)"
-  }
-};
+/* ---------------- Fondo de partículas (mismo del portafolio) ---------------- */
+(function(){
+  const canvas = document.getElementById("particles-bg");
+  if(!canvas) return;
+  const ctx = canvas.getContext && canvas.getContext("2d");
+  if(!ctx) return;
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let w, h, dpr, parts = [], mouse = { x:null, y:null };
 
-function applyLanguage(lang){
-  document.documentElement.lang = lang;
-  const dict = I18N[lang];
-  document.querySelectorAll("[data-i18n]").forEach(el => {
-    const k = el.getAttribute("data-i18n");
-    if(dict[k] !== undefined) el.textContent = dict[k];
-  });
-  document.querySelectorAll("#langToggle button").forEach(b => {
-    b.classList.toggle("active", b.dataset.lang === lang);
-  });
-}
-document.getElementById("langToggle").addEventListener("click", e => {
-  const b = e.target.closest("button[data-lang]");
-  if(b) applyLanguage(b.dataset.lang);
-});
-applyLanguage("es");
+  const colors = () => document.body.classList.contains("theme-dark")
+    ? { line:"143,168,255", dot:"127,212,242" }
+    : { line:"110,140,245", dot:"95,193,232" };
+  const rand = (a,b) => a + Math.random() * (b - a);
+
+  function resize(){
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    w = window.innerWidth; h = window.innerHeight;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    canvas.style.width = w + "px"; canvas.style.height = h + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const count = reduced ? 0 : Math.round(Math.min(80, Math.max(28, (w * h) / 26000)));
+    parts = Array.from({ length:count }, () => ({
+      x: Math.random() * w, y: Math.random() * h,
+      vx: rand(-0.13, 0.13), vy: rand(-0.13, 0.13), r: rand(1, 2.1)
+    }));
+  }
+
+  function step(){
+    ctx.clearRect(0, 0, w, h);
+    const { line, dot } = colors();
+    for(const p of parts){
+      p.x += p.vx; p.y += p.vy;
+      if(p.x < 0 || p.x > w) p.vx *= -1;
+      if(p.y < 0 || p.y > h) p.vy *= -1;
+      if(mouse.x !== null){
+        const dx = p.x - mouse.x, dy = p.y - mouse.y;
+        if(dx*dx + dy*dy < 16000){ p.x += dx * 0.0022; p.y += dy * 0.0022; }
+      }
+    }
+    for(let i = 0; i < parts.length; i++){
+      for(let j = i + 1; j < parts.length; j++){
+        const a = parts[i], b = parts[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if(dist < 128){
+          ctx.strokeStyle = `rgba(${line},${(1 - dist/128) * 0.14})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+        }
+      }
+    }
+    for(const p of parts){
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(${dot},0.55)`;
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    requestAnimationFrame(step);
+  }
+
+  resize();
+  window.addEventListener("resize", resize);
+  window.addEventListener("pointermove", e => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive:true });
+  window.addEventListener("pointerleave", () => { mouse.x = mouse.y = null; });
+  if(!reduced) step();
+})();
 </script>
 </body>
 </html>
